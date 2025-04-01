@@ -4,6 +4,7 @@ import argparse
 
 # Exemplos de execução:
 # python exercise2.py --method rk4 --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
+# python exercise2.py --method euler --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
 # python exercise2.py --compare --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
 
 def simulate_euler(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):

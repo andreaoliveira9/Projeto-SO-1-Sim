@@ -2,6 +2,7 @@ import simpy
 import random
 import statistics
 
+# Exemplo de execução:
 # python exercise1.py
 
 # Parâmetros da simulação
