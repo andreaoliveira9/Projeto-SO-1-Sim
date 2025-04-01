@@ -2,56 +2,58 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
-# python exercise2.py --method rk4 --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 10
-# python ex2.py --compare
+# Exemplos de execução:
+# python exercise2.py --method rk4 --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
+# python exercise2.py --compare --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
 
 def simulate_euler(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):
     t_values = np.arange(0, t_final + dt, dt)
-    x = np.zeros_like(t_values)
-    z = np.zeros_like(t_values)
+    x  = np.zeros_like(t_values)
+    z  = np.zeros_like(t_values)
     vx = np.zeros_like(t_values)
     vz = np.zeros_like(t_values)
     
     # Condições iniciais
-    x[0] = x0
-    z[0] = z0
+    x[0]  = x0
+    z[0]  = z0
     vx[0] = vx0
     vz[0] = vz0
     
     for i in range(len(t_values) - 1):
-        # Calcula as acelerações
-        ax = - (u/m) * (vx[i]**2)
-        az = - g - (u/m) * (vz[i]**2)
-        # Atualização pelo método Euler
-        x[i+1] = x[i] + dt * vx[i]
+        # Calcula as acelerações considerando o sinal da velocidade:
+        ax = - (u/m) * vx[i] * abs(vx[i])
+        az = - g - (u/m) * vz[i] * abs(vz[i])
+        
+        # Atualização pelo método de Euler
+        x[i+1]  = x[i]  + dt * vx[i]
         vx[i+1] = vx[i] + dt * ax
-        z[i+1] = z[i] + dt * vz[i]
+        z[i+1]  = z[i]  + dt * vz[i]
         vz[i+1] = vz[i] + dt * az
         
     return t_values, x, z, vx, vz
 
 def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):
     t_values = np.arange(0, t_final + dt, dt)
-    x = np.zeros_like(t_values)
-    z = np.zeros_like(t_values)
+    x  = np.zeros_like(t_values)
+    z  = np.zeros_like(t_values)
     vx = np.zeros_like(t_values)
     vz = np.zeros_like(t_values)
     
     # Condições iniciais
-    x[0] = x0
-    z[0] = z0
+    x[0]  = x0
+    z[0]  = z0
     vx[0] = vx0
     vz[0] = vz0
     
     for i in range(len(t_values) - 1):
+        # Função que retorna as derivadas
         def f(state):
             x_val, z_val, vx_val, vz_val = state
-            # Retorna as derivadas: [dx/dt, dz/dt, dvx/dt, dvz/dt]
             return np.array([
-                vx_val,
-                vz_val,
-                - (u/m) * (vx_val**2),
-                - g - (u/m) * (vz_val**2)
+                vx_val,                         # dx/dt
+                vz_val,                         # dz/dt
+                - (u/m) * vx_val * abs(vx_val),   # dvx/dt
+                - g - (u/m) * vz_val * abs(vz_val) # dvz/dt
             ])
         
         state = np.array([x[i], z[i], vx[i], vz[i]])
@@ -81,8 +83,10 @@ def main():
 
     if args.compare:
         # Executa ambos os métodos com os mesmos parâmetros
-        t_euler, x_euler, z_euler, vx_euler, vz_euler = simulate_euler(args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
-        t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 = simulate_rk4(args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+        t_euler, x_euler, z_euler, vx_euler, vz_euler = simulate_euler(
+            args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+        t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 = simulate_rk4(
+            args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
         
         print("=== Comparação entre os métodos Euler e RK4 ===")
         print(f"Erro em x (|x_euler - x_rk4|): {abs(x_euler[-1]-x_rk4[-1]):.4f}")
@@ -106,20 +110,38 @@ def main():
         plt.ylabel("Posição z")
         plt.title("Comparação de z(t)")
         plt.legend()
+
+        plt.figure()
+        plt.plot(x_euler, z_euler, label="Trajetória (Euler)")
+        plt.plot(x_rk4, z_rk4, label="Trajetória (RK4)")
+        plt.xlabel("Posição x")
+        plt.ylabel("Posição z")
+        plt.title("Comparação das trajetórias")
+        plt.legend()
         
         plt.show()
     else:
         # Executa o método selecionado
         if args.method == "euler":
-            t, x, z, vx, vz = simulate_euler(args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+            t, x, z, vx, vz = simulate_euler(
+                args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
         else:
-            t, x, z, vx, vz = simulate_rk4(args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+            t, x, z, vx, vz = simulate_rk4(
+                args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
         
         plt.figure()
         plt.plot(t, x, label="x(t)")
         plt.plot(t, z, label="z(t)")
         plt.xlabel("Tempo (s)")
         plt.ylabel("Posição")
+        plt.title(f"Trajetória usando o método {args.method.upper()}")
+        plt.legend()
+        plt.show()
+
+        plt.figure()
+        plt.plot(x, z, label="Trajetória")
+        plt.xlabel("Posição x")
+        plt.ylabel("Posição z")
         plt.title(f"Trajetória usando o método {args.method.upper()}")
         plt.legend()
         plt.show()
