@@ -67,6 +67,57 @@ def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m, g):
         
     return t_values, x, z, vx, vz
 
+def generate_comparison_plots(t_euler, x_euler, z_euler, t_rk4, x_rk4, z_rk4):
+    plt.figure()
+    plt.plot(t_euler, x_euler, label="x (Euler)")
+    plt.plot(t_rk4, x_rk4, label="x (RK4)")
+    plt.xlabel("Tempo (s)")
+    plt.ylabel("Posição x")
+    plt.title("Comparação de x(t)")
+    plt.legend()
+
+    plt.figure()
+    plt.plot(t_euler, z_euler, label="z (Euler)")
+    plt.plot(t_rk4, z_rk4, label="z (RK4)")
+    plt.xlabel("Tempo (s)")
+    plt.ylabel("Posição z")
+    plt.title("Comparação de z(t)")
+    plt.legend()
+
+    plt.figure()
+    plt.plot(x_euler, z_euler, label="Trajetória (Euler)")
+    plt.plot(x_rk4, z_rk4, label="Trajetória (RK4)")
+    plt.xlabel("Posição x")
+    plt.ylabel("Posição z")
+    plt.title("Comparação das trajetórias")
+    plt.legend()
+
+    plt.show()
+
+def generate_single_method_plots(t, x, z):
+    plt.figure()
+    plt.plot(t, x, label="x(t)")
+    plt.xlabel("Tempo (s)")
+    plt.ylabel("Posição x")
+    plt.title("Posição x ao longo do tempo")
+    plt.legend()
+
+    plt.figure()
+    plt.plot(t, z, label="z(t)")
+    plt.xlabel("Tempo (s)")
+    plt.ylabel("Posição z")
+    plt.title("Posição z ao longo do tempo")
+    plt.legend()
+
+    plt.figure()
+    plt.plot(x, z, label="Trajetória")
+    plt.xlabel("Posição x")
+    plt.ylabel("Posição z")
+    plt.title("Trajetória do projétil")
+    plt.legend()
+
+    plt.show()
+
 def main():
     parser = argparse.ArgumentParser(description="Simulação do movimento de um projétil com resistência do ar")
     parser.add_argument("--method", type=str, choices=["euler", "rk4"], default="euler",
@@ -93,38 +144,7 @@ def main():
         t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 = simulate_rk4(
             args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, args.m, args.g)
         
-        print("=== Comparação entre os métodos Euler e RK4 ===")
-        print(f"Erro em x (|x_euler - x_rk4|): {abs(x_euler[-1]-x_rk4[-1]):.4f}")
-        print(f"Erro em z (|z_euler - z_rk4|): {abs(z_euler[-1]-z_rk4[-1]):.4f}")
-        print(f"Erro em vx (|vx_euler - vx_rk4|): {abs(vx_euler[-1]-vx_rk4[-1]):.4f}")
-        print(f"Erro em vz (|vz_euler - vz_rk4|): {abs(vz_euler[-1]-vz_rk4[-1]):.4f}")
-        
-        # Plota a comparação das trajetórias
-        plt.figure()
-        plt.plot(t_euler, x_euler, label="x (Euler)")
-        plt.plot(t_rk4, x_rk4, label="x (RK4)")
-        plt.xlabel("Tempo (s)")
-        plt.ylabel("Posição x")
-        plt.title("Comparação de x(t)")
-        plt.legend()
-        
-        plt.figure()
-        plt.plot(t_euler, z_euler, label="z (Euler)")
-        plt.plot(t_rk4, z_rk4, label="z (RK4)")
-        plt.xlabel("Tempo (s)")
-        plt.ylabel("Posição z")
-        plt.title("Comparação de z(t)")
-        plt.legend()
-
-        plt.figure()
-        plt.plot(x_euler, z_euler, label="Trajetória (Euler)")
-        plt.plot(x_rk4, z_rk4, label="Trajetória (RK4)")
-        plt.xlabel("Posição x")
-        plt.ylabel("Posição z")
-        plt.title("Comparação das trajetórias")
-        plt.legend()
-        
-        plt.show()
+        generate_comparison_plots(t_euler, x_euler, z_euler, t_rk4, x_rk4, z_rk4)
     else:
         # Executa o método selecionado
         if args.method == "euler":
@@ -134,28 +154,7 @@ def main():
             t, x, z, vx, vz = simulate_rk4(
                 args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, m=args.m, g=args.g)
         
-        plt.figure()
-        plt.plot(t, x, label="x(t)")
-        plt.xlabel("Tempo (s)")
-        plt.ylabel("Posição x")
-        plt.title(f"Posição x usando o método {args.method.upper()}")
-        plt.legend()
-
-        plt.figure()
-        plt.plot(t, z, label="z(t)")
-        plt.xlabel("Tempo (s)")
-        plt.ylabel("Posição z")
-        plt.title(f"Posição z usando o método {args.method.upper()}")
-        plt.legend()
-
-        plt.figure()
-        plt.plot(x, z, label="Trajetória")
-        plt.xlabel("Posição x")
-        plt.ylabel("Posição z")
-        plt.title(f"Trajetória usando o método {args.method.upper()}")
-        plt.legend()
-
-        plt.show()
+        generate_single_method_plots(t, x, z)
 
 if __name__ == '__main__':
     main()
