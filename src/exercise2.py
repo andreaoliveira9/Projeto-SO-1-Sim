@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 import argparse
 
 # Exemplos de execução:
-# python exercise2.py --method rk4 --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
-# python exercise2.py --method euler --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
-# python exercise2.py --compare --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3
+# python exercise2.py --method rk4 --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3 --m 1.0 --g 9.81
+# python exercise2.py --method euler --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3 --m 1.0 --g 9.81
+# python exercise2.py --compare --x0 0 --z0 0 --vx0 50 --vz0 50 --u 0.1 --dt 0.01 --tfinal 3 --m 1.0 --g 9.81
 
-def simulate_euler(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):
+def simulate_euler(x0, z0, vx0, vz0, u, dt, t_final, m, g):
     t_values = np.arange(0, t_final + dt, dt)
     x  = np.zeros_like(t_values)
     z  = np.zeros_like(t_values)
@@ -33,7 +33,7 @@ def simulate_euler(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):
         
     return t_values, x, z, vx, vz
 
-def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):
+def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m, g):
     t_values = np.arange(0, t_final + dt, dt)
     x  = np.zeros_like(t_values)
     z  = np.zeros_like(t_values)
@@ -51,10 +51,10 @@ def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m=1.0, g=9.81):
         def f(state):
             x_val, z_val, vx_val, vz_val = state
             return np.array([
-                vx_val,                         # dx/dt
-                vz_val,                         # dz/dt
-                - (u/m) * vx_val * abs(vx_val),   # dvx/dt
-                - g - (u/m) * vz_val * abs(vz_val) # dvz/dt
+                vx_val,                          # dx/dt
+                vz_val,                          # dz/dt
+                - (u/m) * vx_val * abs(vx_val),    # dvx/dt
+                - g - (u/m) * vz_val * abs(vz_val)  # dvz/dt
             ])
         
         state = np.array([x[i], z[i], vx[i], vz[i]])
@@ -80,14 +80,18 @@ def main():
     parser.add_argument("--u", type=float, default=0.1, help="Coeficiente de resistência do ar")
     parser.add_argument("--dt", type=float, default=0.01, help="Intervalo de tempo (Δt)")
     parser.add_argument("--tfinal", type=float, default=10.0, help="Tempo final da simulação")
+    # Novos argumentos para massa e aceleração gravitacional
+    parser.add_argument("--m", type=float, default=1.0, help="Massa do corpo")
+    parser.add_argument("--g", type=float, default=9.81, help="Aceleração gravitacional")
+    
     args = parser.parse_args()
 
     if args.compare:
         # Executa ambos os métodos com os mesmos parâmetros
         t_euler, x_euler, z_euler, vx_euler, vz_euler = simulate_euler(
-            args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+            args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, args.m, args.g)
         t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 = simulate_rk4(
-            args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+            args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, args.m, args.g)
         
         print("=== Comparação entre os métodos Euler e RK4 ===")
         print(f"Erro em x (|x_euler - x_rk4|): {abs(x_euler[-1]-x_rk4[-1]):.4f}")
@@ -125,10 +129,10 @@ def main():
         # Executa o método selecionado
         if args.method == "euler":
             t, x, z, vx, vz = simulate_euler(
-                args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+                args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, m=args.m, g=args.g)
         else:
             t, x, z, vx, vz = simulate_rk4(
-                args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal)
+                args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, m=args.m, g=args.g)
         
         plt.figure()
         plt.plot(t, x, label="x(t)")
