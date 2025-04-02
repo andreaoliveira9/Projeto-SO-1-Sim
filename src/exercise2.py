@@ -34,6 +34,16 @@ def simulate_euler(x0, z0, vx0, vz0, u, dt, t_final, m, g):
     return t_values, x, z, vx, vz
 
 def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m, g):
+    # Função que retorna as derivadas
+    def f(state):
+        x_val, z_val, vx_val, vz_val = state
+        return np.array([
+            vx_val,                          # dx/dt
+            vz_val,                          # dz/dt
+            - (u/m) * vx_val * abs(vx_val),    # dvx/dt
+            - g - (u/m) * vz_val * abs(vz_val)  # dvz/dt
+        ])
+        
     t_values = np.arange(0, t_final + dt, dt)
     x  = np.zeros_like(t_values)
     z  = np.zeros_like(t_values)
@@ -47,16 +57,6 @@ def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m, g):
     vz[0] = vz0
     
     for i in range(len(t_values) - 1):
-        # Função que retorna as derivadas
-        def f(state):
-            x_val, z_val, vx_val, vz_val = state
-            return np.array([
-                vx_val,                          # dx/dt
-                vz_val,                          # dz/dt
-                - (u/m) * vx_val * abs(vx_val),    # dvx/dt
-                - g - (u/m) * vz_val * abs(vz_val)  # dvz/dt
-            ])
-        
         state = np.array([x[i], z[i], vx[i], vz[i]])
         k1 = f(state)
         k2 = f(state + 0.5 * dt * k1)
@@ -136,12 +136,17 @@ def main():
         
         plt.figure()
         plt.plot(t, x, label="x(t)")
+        plt.xlabel("Tempo (s)")
+        plt.ylabel("Posição x")
+        plt.title(f"Posição x usando o método {args.method.upper()}")
+        plt.legend()
+
+        plt.figure()
         plt.plot(t, z, label="z(t)")
         plt.xlabel("Tempo (s)")
-        plt.ylabel("Posição")
-        plt.title(f"Trajetória usando o método {args.method.upper()}")
+        plt.ylabel("Posição z")
+        plt.title(f"Posição z usando o método {args.method.upper()}")
         plt.legend()
-        plt.show()
 
         plt.figure()
         plt.plot(x, z, label="Trajetória")
@@ -149,14 +154,8 @@ def main():
         plt.ylabel("Posição z")
         plt.title(f"Trajetória usando o método {args.method.upper()}")
         plt.legend()
+
         plt.show()
-        
-        print("=== Resultados da Simulação ===")
-        print(f"Tempo final: {t[-1]:.2f} s")
-        print(f"x(t_final): {x[-1]:.2f}")
-        print(f"z(t_final): {z[-1]:.2f}")
-        print(f"vx(t_final): {vx[-1]:.2f}")
-        print(f"vz(t_final): {vz[-1]:.2f}")
 
 if __name__ == '__main__':
     main()
