@@ -67,55 +67,103 @@ def simulate_rk4(x0, z0, vx0, vz0, u, dt, t_final, m, g):
         
     return t_values, x, z, vx, vz
 
-def generate_comparison_plots(t_euler, x_euler, z_euler, t_rk4, x_rk4, z_rk4):
-    plt.figure()
-    plt.plot(t_euler, x_euler, label="x (Euler)")
-    plt.plot(t_rk4, x_rk4, label="x (RK4)")
-    plt.xlabel("Tempo (s)")
-    plt.ylabel("Posição x")
-    plt.title("Comparação de x(t)")
-    plt.legend()
-
-    plt.figure()
-    plt.plot(t_euler, z_euler, label="z (Euler)")
-    plt.plot(t_rk4, z_rk4, label="z (RK4)")
-    plt.xlabel("Tempo (s)")
-    plt.ylabel("Posição z")
-    plt.title("Comparação de z(t)")
-    plt.legend()
-
-    plt.figure()
-    plt.plot(x_euler, z_euler, label="Trajetória (Euler)")
-    plt.plot(x_rk4, z_rk4, label="Trajetória (RK4)")
-    plt.xlabel("Posição x")
-    plt.ylabel("Posição z")
-    plt.title("Comparação das trajetórias")
-    plt.legend()
-
+def generate_comparison_plots(t_euler, x_euler, z_euler, vx_euler, vz_euler, t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4):
+    # Cria uma figura única com subplots organizados em uma grade usando GridSpec
+    fig = plt.figure(constrained_layout=True, figsize=(12, 10))
+    gs = fig.add_gridspec(3, 2)
+    
+    # Subplot para x(t)
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.plot(t_euler, x_euler, label="x (Euler)")
+    ax1.plot(t_rk4, x_rk4, label="x (RK4)")
+    ax1.set_xlabel("Tempo (s)")
+    ax1.set_ylabel("Posição x (m)")
+    ax1.set_title("Comparação de x(t)")
+    ax1.legend()
+    
+    # Subplot para vx(t)
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.plot(t_euler, vx_euler, label="vx (Euler)")
+    ax2.plot(t_rk4, vx_rk4, label="vx (RK4)")
+    ax2.set_xlabel("Tempo (s)")
+    ax2.set_ylabel("Velocidade vx (m/s)")
+    ax2.set_title("Comparação de vx(t)")
+    ax2.legend()
+    
+    # Subplot para z(t)
+    ax3 = fig.add_subplot(gs[1, 0])
+    ax3.plot(t_euler, z_euler, label="z (Euler)")
+    ax3.plot(t_rk4, z_rk4, label="z (RK4)")
+    ax3.set_xlabel("Tempo (s)")
+    ax3.set_ylabel("Posição z (m)")
+    ax3.set_title("Comparação de z(t)")
+    ax3.legend()
+    
+    # Subplot para vz(t)
+    ax4 = fig.add_subplot(gs[1, 1])
+    ax4.plot(t_euler, vz_euler, label="vz (Euler)")
+    ax4.plot(t_rk4, vz_rk4, label="vz (RK4)")
+    ax4.set_xlabel("Tempo (s)")
+    ax4.set_ylabel("Velocidade vz (m/s)")
+    ax4.set_title("Comparação de vz(t)")
+    ax4.legend()
+    
+    # Subplot para a trajetória (ocupando a linha inteira)
+    ax5 = fig.add_subplot(gs[2, :])
+    ax5.plot(x_euler, z_euler, label="Trajetória (Euler)")
+    ax5.plot(x_rk4, z_rk4, label="Trajetória (RK4)")
+    ax5.set_xlabel("Posição x (m)")
+    ax5.set_ylabel("Posição z (m)")
+    ax5.set_title("Comparação das trajetórias")
+    ax5.legend()
+    
     plt.show()
 
-def generate_single_method_plots(t, x, z):
-    plt.figure()
-    plt.plot(t, x, label="x(t)")
-    plt.xlabel("Tempo (s)")
-    plt.ylabel("Posição x")
-    plt.title("Posição x ao longo do tempo")
-    plt.legend()
-
-    plt.figure()
-    plt.plot(t, z, label="z(t)")
-    plt.xlabel("Tempo (s)")
-    plt.ylabel("Posição z")
-    plt.title("Posição z ao longo do tempo")
-    plt.legend()
-
-    plt.figure()
-    plt.plot(x, z, label="Trajetória")
-    plt.xlabel("Posição x")
-    plt.ylabel("Posição z")
-    plt.title("Trajetória do projétil")
-    plt.legend()
-
+def generate_single_method_plots(t, x, vx, z, vz):
+    # Cria uma figura única com subplots organizados em uma grade usando GridSpec
+    fig = plt.figure(constrained_layout=True, figsize=(12, 10))
+    gs = fig.add_gridspec(3, 2)
+    
+    # Subplot para x(t)
+    ax1 = fig.add_subplot(gs[0, 0])
+    ax1.plot(t, x, label="x(t)")
+    ax1.set_xlabel("Tempo (s)")
+    ax1.set_ylabel("Posição x (m)")
+    ax1.set_title("Posição x ao longo do tempo")
+    ax1.legend()
+    
+    # Subplot para vx(t)
+    ax2 = fig.add_subplot(gs[0, 1])
+    ax2.plot(t, vx, label="vx(t)")
+    ax2.set_xlabel("Tempo (s)")
+    ax2.set_ylabel("Velocidade vx (m/s)")
+    ax2.set_title("Velocidade vx ao longo do tempo")
+    ax2.legend()
+    
+    # Subplot para z(t)
+    ax3 = fig.add_subplot(gs[1, 0])
+    ax3.plot(t, z, label="z(t)")
+    ax3.set_xlabel("Tempo (s)")
+    ax3.set_ylabel("Posição z (m)")
+    ax3.set_title("Posição z ao longo do tempo")
+    ax3.legend()
+    
+    # Subplot para vz(t)
+    ax4 = fig.add_subplot(gs[1, 1])
+    ax4.plot(t, vz, label="vz(t)")
+    ax4.set_xlabel("Tempo (s)")
+    ax4.set_ylabel("Velocidade vz (m/s)")
+    ax4.set_title("Velocidade vz ao longo do tempo")
+    ax4.legend()
+    
+    # Subplot para a trajetória (ocupando a linha inteira)
+    ax5 = fig.add_subplot(gs[2, :])
+    ax5.plot(x, z, label="Trajetória")
+    ax5.set_xlabel("Posição x (m)")
+    ax5.set_ylabel("Posição z (m)")
+    ax5.set_title("Trajetória do projétil")
+    ax5.legend()
+    
     plt.show()
 
 def main():
@@ -144,7 +192,7 @@ def main():
         t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 = simulate_rk4(
             args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, args.m, args.g)
         
-        generate_comparison_plots(t_euler, x_euler, z_euler, t_rk4, x_rk4, z_rk4)
+        generate_comparison_plots(t_euler, x_euler, z_euler, vx_euler, vz_euler, t_rk4, x_rk4, z_rk4, vx_rk4,vz_rk4)
     else:
         # Executa o método selecionado
         if args.method == "euler":
@@ -154,7 +202,7 @@ def main():
             t, x, z, vx, vz = simulate_rk4(
                 args.x0, args.z0, args.vx0, args.vz0, args.u, args.dt, args.tfinal, m=args.m, g=args.g)
         
-        generate_single_method_plots(t, x, z)
+        generate_single_method_plots(t, x, vx, z, vz)
 
 if __name__ == '__main__':
     main()
