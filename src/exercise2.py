@@ -3,13 +3,6 @@ import matplotlib.pyplot as plt
 import argparse
 from typing import List, Tuple
 
-# -------------------------------------------------------------------------
-# Execution examples:
-# python exercise2.py --method rk4 --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
-# python exercise2.py --method euler --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
-# python exercise2.py --compare --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
-# -------------------------------------------------------------------------
-
 
 class Simulation:
     """

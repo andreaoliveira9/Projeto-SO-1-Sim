@@ -3,11 +3,6 @@ import random
 import statistics
 from typing import List, Generator, Any
 
-# -------------------------------------------------------------------------
-# Execution example:
-# python exercise1.py
-# -------------------------------------------------------------------------
-
 # Simulation Parameters (Constants)
 RANDOM_SEED: int = 42
 SIMULATION_TIME: float = 160  # Total simulation time in hours
