@@ -21,9 +21,9 @@ class Simulation:
         self.mass = mass
         self.gravity = gravity
         self.drag = drag
-        self.reset_state()
+        self.initialize()
 
-    def reset_state(self):
+    def initialize(self):
         """Reset the simulation state to the initial conditions."""
         self.x = self.x0
         self.y = self.y0
@@ -81,7 +81,7 @@ class Simulation:
         Returns:
             tuple: Histories of time, x, y, vx, and vy.
         """
-        self.reset_state()
+        self.initialize()
         num_steps = int(self.t_final / self.dt)
         for _ in range(num_steps):
             if method.lower() == "euler":
