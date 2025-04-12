@@ -204,8 +204,8 @@ def calculate_statistics(
         statistics.mean(repair_queue_lengths) if repair_queue_lengths else 0.0
     )
 
-    utilization_inspection: float = inspection_station.busy_time / SIMULATION_TIME
-    utilization_repair: float = repair_station.busy_time / (2 * SIMULATION_TIME)
+    utilization_inspection: float = inspection_station.busy_time / SIMULATION_TIME * 100
+    utilization_repair: float = repair_station.busy_time / (2 * SIMULATION_TIME) * 100
 
     return {
         "avg_inspection_wait": avg_inspection_wait,
@@ -233,8 +233,8 @@ def report(stats: dict) -> None:
     )
     print(f"Average queue length at inspection: {stats['avg_inspection_queue']:.3f}")
     print(f"Average queue length at repair: {stats['avg_repair_queue']:.3f}")
-    print(f"Inspection station utilization: {stats['utilization_inspection']:.3f}")
-    print(f"Repair station utilization: {stats['utilization_repair']:.3f}")
+    print(f"Inspection station utilization: {stats['utilization_inspection']:.3f} %")
+    print(f"Repair station utilization: {stats['utilization_repair']:.3f} %")
 
 
 def run_simulation() -> None:
