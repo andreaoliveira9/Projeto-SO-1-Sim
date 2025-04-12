@@ -159,6 +159,7 @@ def generate_comparison_plots(
     y_rk4: List[float],
     vx_rk4: List[float],
     vy_rk4: List[float],
+    dt: float,
 ) -> None:
     """
     Generate plots to compare the Euler and RK4 integration methods.
@@ -168,6 +169,7 @@ def generate_comparison_plots(
         t_rk4, x_rk4, y_rk4, vx_rk4, vy_rk4 (List[float]): Histories from RK4 method.
     """
     fig = plt.figure(constrained_layout=True, figsize=(12, 10))
+    fig.suptitle(f"Comparison of Euler and RK4 methods (dt = {dt}s)", fontsize=16)
     gs = fig.add_gridspec(3, 2)
 
     # Plot for x(t)
@@ -224,6 +226,8 @@ def generate_single_method_plots(
     y: List[float],
     vx: List[float],
     vy: List[float],
+    dt: float,
+    method: str,
 ) -> None:
     """
     Generate plots for a single integration method.
@@ -232,6 +236,9 @@ def generate_single_method_plots(
         t, x, y, vx, vy (List[float]): Histories of time, x, y, vx, and vy.
     """
     fig = plt.figure(constrained_layout=True, figsize=(12, 10))
+    fig.suptitle(
+        f"Projectile Motion using {method.upper()} method (dt = {dt}s)", fontsize=16
+    )
     gs = fig.add_gridspec(3, 2)
 
     # Plot for x(t)
@@ -344,13 +351,20 @@ def main() -> None:
             y_rk4,
             vx_rk4,
             vy_rk4,
+            args.dt,
         )
     else:
         t_history, x_history, y_history, vx_history, vy_history = sim.run_simulation(
             args.method
         )
         generate_single_method_plots(
-            t_history, x_history, y_history, vx_history, vy_history
+            t_history,
+            x_history,
+            y_history,
+            vx_history,
+            vy_history,
+            args.dt,
+            args.method,
         )
 
 
