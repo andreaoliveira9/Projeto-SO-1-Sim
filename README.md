@@ -36,19 +36,19 @@ This exercise runs a basic simulation and does not require any command-line para
 #### Using the Runge-Kutta 4th-order method (RK4)
 
 ```bash
-python src/exercise2.py --method rk4 --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
+python src/exercise2.py --method rk4 --x0 0 --z0 0 --vx0 50 --vz0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
 ```
 
 #### Using the Euler method
 
 ```bash
-python src/exercise2.py --method euler --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
+python src/exercise2.py --method euler --x0 0 --z0 0 --vx0 50 --vz0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
 ```
 
 #### Comparing both methods
 
 ```bash
-python src/exercise2.py --compare --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
+python src/exercise2.py --compare --x0 0 --z0 0 --vx0 50 --vz0 50 --drag 0.1 --dt 0.01 --tfinal 3 --mass 1.0 --gravity 9.81
 ```
 
 #### Command-line parameters
@@ -58,9 +58,9 @@ python src/exercise2.py --compare --x0 0 --y0 0 --vx0 50 --vy0 50 --drag 0.1 --d
 | `--method`    | Numerical method to use (`euler` or `rk4`)                |
 | `--compare`   | Runs and compares both methods                            |
 | `--x0`        | Initial position in the x-axis (in meters)                |
-| `--y0`        | Initial position in the y-axis (in meters)                |
+| `--z0`        | Initial position in the z-axis (in meters)                |
 | `--vx0`       | Initial velocity in the x-axis (in m/s)                   |
-| `--vy0`       | Initial velocity in the y-axis (in m/s)                   |
+| `--vz0`       | Initial velocity in the z-axis (in m/s)                   |
 | `--drag`      | Drag coefficient (air resistance)                         |
 | `--dt`        | Time step of the simulation (in seconds)                  |
 | `--tfinal`    | Total simulation time (in seconds)                        |

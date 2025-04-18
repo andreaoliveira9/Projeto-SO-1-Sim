@@ -10,9 +10,9 @@ class Simulation:
 
     Attributes:
         x0 (float): Initial x position.
-        y0 (float): Initial y position.
+        z0 (float): Initial z position.
         vx0 (float): Initial x velocity.
-        vy0 (float): Initial y velocity.
+        vz0 (float): Initial z velocity.
         dt (float): Time step.
         t_final (float): Final simulation time.
         mass (float): Mass of the projectile.
@@ -23,9 +23,9 @@ class Simulation:
     def __init__(
         self,
         x0: float,
-        y0: float,
+        z0: float,
         vx0: float,
-        vy0: float,
+        vz0: float,
         dt: float,
         t_final: float,
         mass: float,
@@ -33,9 +33,9 @@ class Simulation:
         drag: float,
     ) -> None:
         self.x0: float = x0
-        self.y0: float = y0
+        self.z0: float = z0
         self.vx0: float = vx0
-        self.vy0: float = vy0
+        self.vz0: float = vz0
         self.dt: float = dt
         self.t_final: float = t_final
         self.mass: float = mass
@@ -46,16 +46,16 @@ class Simulation:
     def initialize(self) -> None:
         """Reset the simulation state to the initial conditions."""
         self.x: float = self.x0
-        self.y: float = self.y0
+        self.z: float = self.z0
         self.vx: float = self.vx0
-        self.vy: float = self.vy0
+        self.vz: float = self.vz0
         self.t: float = 0.0
 
         self.t_history: List[float] = [self.t]
         self.x_history: List[float] = [self.x]
-        self.y_history: List[float] = [self.y]
+        self.z_history: List[float] = [self.z]
         self.vx_history: List[float] = [self.vx]
-        self.vy_history: List[float] = [self.vy]
+        self.vz_history: List[float] = [self.vz]
 
     def observe(self) -> None:
         """
@@ -64,41 +64,41 @@ class Simulation:
         self.t += self.dt
         self.t_history.append(self.t)
         self.x_history.append(self.x)
-        self.y_history.append(self.y)
+        self.z_history.append(self.z)
         self.vx_history.append(self.vx)
-        self.vy_history.append(self.vy)
+        self.vz_history.append(self.vz)
 
     def update_euler(self) -> None:
         """
         Update the simulation state using the Euler integration method.
         """
         ax: float = -(self.drag / self.mass) * self.vx * abs(self.vx)
-        ay: float = -self.gravity - (self.drag / self.mass) * self.vy * abs(self.vy)
+        az: float = -self.gravity - (self.drag / self.mass) * self.vz * abs(self.vz)
         self.x += self.dt * self.vx
         self.vx += self.dt * ax
-        self.y += self.dt * self.vy
-        self.vy += self.dt * ay
+        self.z += self.dt * self.vz
+        self.vz += self.dt * az
 
     def update_rk4(self) -> None:
         """
         Update the simulation state using the fourth-order Runge-Kutta (RK4) method.
         """
-        state: np.ndarray = np.array([self.x, self.y, self.vx, self.vy])
+        state: np.ndarray = np.array([self.x, self.z, self.vx, self.vz])
 
         def f(state: np.ndarray) -> np.ndarray:
             """
             Compute the derivatives of the state.
 
             Args:
-                state (np.ndarray): Array containing [x, y, vx, vy].
+                state (np.ndarray): Array containing [x, z, vx, vz].
 
             Returns:
-                np.ndarray: Derivatives [vx, vy, ax, ay].
+                np.ndarray: Derivatives [vx, vz, ax, az].
             """
-            x, y, vx, vy = state
+            x, z, vx, vz = state
             ax: float = -(self.drag / self.mass) * vx * abs(vx)
-            ay: float = -self.gravity - (self.drag / self.mass) * vy * abs(vy)
-            return np.array([vx, vy, ax, ay])
+            az: float = -self.gravity - (self.drag / self.mass) * vz * abs(vz)
+            return np.array([vx, vz, ax, az])
 
         dt: float = self.dt
         k1: np.ndarray = f(state)
@@ -106,7 +106,7 @@ class Simulation:
         k3: np.ndarray = f(state + 0.5 * dt * k2)
         k4: np.ndarray = f(state + dt * k3)
         state_next: np.ndarray = state + (dt / 6.0) * (k1 + 2 * k2 + 2 * k3 + k4)
-        self.x, self.y, self.vx, self.vy = state_next
+        self.x, self.z, self.vx, self.vz = state_next
 
     def run_simulation(
         self, method: str
@@ -118,7 +118,7 @@ class Simulation:
             method (str): Integration method ('euler' or 'rk4').
 
         Returns:
-            Tuple containing histories: time, x, y, vx, and vy.
+            Tuple containing histories: time, x, z, vx, and vz.
         """
         self.initialize()
         num_steps: int = int(self.t_final / self.dt)
@@ -135,31 +135,31 @@ class Simulation:
         return (
             self.t_history,
             self.x_history,
-            self.y_history,
+            self.z_history,
             self.vx_history,
-            self.vy_history,
+            self.vz_history,
         )
 
 
 def generate_comparison_plots(
     t_euler: List[float],
     x_euler: List[float],
-    y_euler: List[float],
+    z_euler: List[float],
     vx_euler: List[float],
-    vy_euler: List[float],
+    vz_euler: List[float],
     t_rk4: List[float],
     x_rk4: List[float],
-    y_rk4: List[float],
+    z_rk4: List[float],
     vx_rk4: List[float],
-    vy_rk4: List[float],
+    vz_rk4: List[float],
     dt: float,
 ) -> None:
     """
     Generate plots to compare the Euler and RK4 integration methods.
 
     Args:
-        t_euler, x_euler, y_euler, vx_euler, vy_euler (List[float]): Histories from Euler method.
-        t_rk4, x_rk4, y_rk4, vx_rk4, vy_rk4 (List[float]): Histories from RK4 method.
+        t_euler, x_euler, z_euler, vx_euler, vz_euler (List[float]): Histories from Euler method.
+        t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 (List[float]): Histories from RK4 method.
     """
     fig = plt.figure(constrained_layout=True, figsize=(12, 10))
     fig.suptitle(f"Comparison of Euler and RK4 methods (dt = {dt}s)", fontsize=16)
@@ -183,30 +183,30 @@ def generate_comparison_plots(
     ax2.set_title("Velocity x over Time")
     ax2.legend()
 
-    # Plot for y(t)
+    # Plot for z(t)
     ax3 = fig.add_subplot(gs[1, 0])
-    ax3.plot(t_euler, y_euler, label="Euler")
-    ax3.plot(t_rk4, y_rk4, label="RK4")
+    ax3.plot(t_euler, z_euler, label="Euler")
+    ax3.plot(t_rk4, z_rk4, label="RK4")
     ax3.set_xlabel("Time (s)")
-    ax3.set_ylabel("Position y (m)")
-    ax3.set_title("Position y over Time")
+    ax3.set_ylabel("Position z (m)")
+    ax3.set_title("Position z over Time")
     ax3.legend()
 
-    # Plot for vy(t)
+    # Plot for vz(t)
     ax4 = fig.add_subplot(gs[1, 1])
-    ax4.plot(t_euler, vy_euler, label="Euler")
-    ax4.plot(t_rk4, vy_rk4, label="RK4")
+    ax4.plot(t_euler, vz_euler, label="Euler")
+    ax4.plot(t_rk4, vz_rk4, label="RK4")
     ax4.set_xlabel("Time (s)")
-    ax4.set_ylabel("Velocity y (m/s)")
-    ax4.set_title("Velocity y over Time")
+    ax4.set_ylabel("Velocity z (m/s)")
+    ax4.set_title("Velocity z over Time")
     ax4.legend()
 
     # Trajectory plot
     ax5 = fig.add_subplot(gs[2, :])
-    ax5.plot(x_euler, y_euler, label="Euler")
-    ax5.plot(x_rk4, y_rk4, label="RK4")
+    ax5.plot(x_euler, z_euler, label="Euler")
+    ax5.plot(x_rk4, z_rk4, label="RK4")
     ax5.set_xlabel("Position x (m)")
-    ax5.set_ylabel("Position y (m)")
+    ax5.set_ylabel("Position z (m)")
     ax5.set_title("Projectile Trajectory")
     ax5.legend()
 
@@ -216,9 +216,9 @@ def generate_comparison_plots(
 def generate_single_method_plots(
     t: List[float],
     x: List[float],
-    y: List[float],
+    z: List[float],
     vx: List[float],
-    vy: List[float],
+    vz: List[float],
     dt: float,
     method: str,
 ) -> None:
@@ -226,7 +226,7 @@ def generate_single_method_plots(
     Generate plots for a single integration method.
 
     Args:
-        t, x, y, vx, vy (List[float]): Histories of time, x, y, vx, and vy.
+        t, x, z, vx, vz (List[float]): Histories of time, x, z, vx, and vz.
     """
     fig = plt.figure(constrained_layout=True, figsize=(12, 10))
     fig.suptitle(
@@ -248,25 +248,25 @@ def generate_single_method_plots(
     ax2.set_ylabel("Velocity x (m/s)")
     ax2.set_title("Velocity x over Time")
 
-    # Plot for y(t)
+    # Plot for z(t)
     ax3 = fig.add_subplot(gs[1, 0])
-    ax3.plot(t, y)
+    ax3.plot(t, z)
     ax3.set_xlabel("Time (s)")
-    ax3.set_ylabel("Position y (m)")
-    ax3.set_title("Position y over Time")
+    ax3.set_ylabel("Position z (m)")
+    ax3.set_title("Position z over Time")
 
-    # Plot for vy(t)
+    # Plot for vz(t)
     ax4 = fig.add_subplot(gs[1, 1])
-    ax4.plot(t, vy)
+    ax4.plot(t, vz)
     ax4.set_xlabel("Time (s)")
-    ax4.set_ylabel("Velocity y (m/s)")
-    ax4.set_title("Velocity y over Time")
+    ax4.set_ylabel("Velocity z (m/s)")
+    ax4.set_title("Velocity z over Time")
 
     # Trajectory plot
     ax5 = fig.add_subplot(gs[2, :])
-    ax5.plot(x, y)
+    ax5.plot(x, z)
     ax5.set_xlabel("Position x (m)")
-    ax5.set_ylabel("Position y (m)")
+    ax5.set_ylabel("Position z (m)")
     ax5.set_title("Projectile Trajectory")
 
     plt.show()
@@ -292,9 +292,9 @@ def main() -> None:
         help="Run both methods and compare the results",
     )
     parser.add_argument("--x0", type=float, default=0.0, help="Initial x position")
-    parser.add_argument("--y0", type=float, default=0.0, help="Initial y position")
+    parser.add_argument("--z0", type=float, default=0.0, help="Initial z position")
     parser.add_argument("--vx0", type=float, default=50.0, help="Initial x velocity")
-    parser.add_argument("--vy0", type=float, default=50.0, help="Initial y velocity")
+    parser.add_argument("--vz0", type=float, default=50.0, help="Initial z velocity")
     parser.add_argument(
         "--drag", type=float, default=0.1, help="Air resistance coefficient"
     )
@@ -314,9 +314,9 @@ def main() -> None:
     # Create a simulation instance with the provided parameters
     sim = Simulation(
         args.x0,
-        args.y0,
+        args.z0,
         args.vx0,
-        args.vy0,
+        args.vz0,
         args.dt,
         args.tfinal,
         args.mass,
@@ -326,31 +326,31 @@ def main() -> None:
 
     if args.compare:
         # Run simulation using both Euler and RK4 methods
-        t_euler, x_euler, y_euler, vx_euler, vy_euler = sim.run_simulation("euler")
-        t_rk4, x_rk4, y_rk4, vx_rk4, vy_rk4 = sim.run_simulation("rk4")
+        t_euler, x_euler, z_euler, vx_euler, vz_euler = sim.run_simulation("euler")
+        t_rk4, x_rk4, z_rk4, vx_rk4, vz_rk4 = sim.run_simulation("rk4")
         generate_comparison_plots(
             t_euler,
             x_euler,
-            y_euler,
+            z_euler,
             vx_euler,
-            vy_euler,
+            vz_euler,
             t_rk4,
             x_rk4,
-            y_rk4,
+            z_rk4,
             vx_rk4,
-            vy_rk4,
+            vz_rk4,
             args.dt,
         )
     else:
-        t_history, x_history, y_history, vx_history, vy_history = sim.run_simulation(
+        t_history, x_history, z_history, vx_history, vz_history = sim.run_simulation(
             args.method
         )
         generate_single_method_plots(
             t_history,
             x_history,
-            y_history,
+            z_history,
             vx_history,
-            vy_history,
+            vz_history,
             args.dt,
             args.method,
         )
