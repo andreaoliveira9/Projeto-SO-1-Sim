@@ -193,7 +193,6 @@ def calculate_statistics(
     avg_repair_wait: float = (
         statistics.mean(repair_wait_times) if repair_wait_times else 0.0
     )
-
     avg_inspection_queue: float = (
         statistics.mean(inspection_queue_lengths) if inspection_queue_lengths else 0.0
     )
