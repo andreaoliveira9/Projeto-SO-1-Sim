@@ -23,21 +23,21 @@ source venv/bin/activate
 pip install -r src/requirements.txt
 ```
 
-### Exercise 1 (without SimPy)
+### Exercise 1
 
 ```bash
 python src/exercise1.py
 ```
 
-This script runs a basic simulation using a method without SimPy and does not require any command-line parameters.
+This script runs the same simulation using an implementation with SimPy, also without any command-line parameters.
 
-### Exercise 1 (with SimPy)
+### Exercise 1 (no SimPy)
 
 ```bash
-python src/exercise1_simpy.py
+python src/exercise1_nosimpy.py
 ```
 
-This script runs the same simulation using an implementation with SimPy, also without any command-line parameters.
+This script runs a basic simulation using a method without SimPy and does not require any command-line parameters.
 
 ### Exercise 2
 
