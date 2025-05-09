@@ -7,8 +7,10 @@ from typing import List, Generator, Any
 RANDOM_SEED: int = 42
 SIMULATION_TIME: float = 160  # Total simulation time in hours
 MEAN_INTERARRIVAL: float = 2.0  # Mean interarrival time (hours)
+INSPECTION_CAPACITY: int = 1  # Capacity of the inspection station
 INSPECTION_TIME_MIN: float = 0.25  # Minimum inspection duration (hours)
 INSPECTION_TIME_MAX: float = 1.05  # Maximum inspection duration (hours)
+REPAIR_CAPACITY: int = 2  # Capacity of the repair station
 REPAIR_TIME_MIN: float = 2.1  # Minimum repair duration (hours)
 REPAIR_TIME_MAX: float = 4.5  # Maximum repair duration (hours)
 REPAIR_PROB: float = 0.3  # Probability that a bus requires repair
@@ -36,7 +38,7 @@ class InspectionStation:
 
     def __init__(self, env: simpy.Environment) -> None:
         self.env: simpy.Environment = env
-        self.resource: simpy.Resource = simpy.Resource(env, capacity=1)
+        self.resource: simpy.Resource = simpy.Resource(env, INSPECTION_CAPACITY)
         self.busy_time: float = 0.0  # Total time the station is occupied
 
     def inspect(self, bus_id: str) -> Generator[Any, None, None]:
@@ -61,7 +63,7 @@ class RepairStation:
 
     def __init__(self, env: simpy.Environment) -> None:
         self.env: simpy.Environment = env
-        self.resource: simpy.Resource = simpy.Resource(env, capacity=2)
+        self.resource: simpy.Resource = simpy.Resource(env, REPAIR_CAPACITY)
         self.busy_time: float = 0.0  # Combined busy time for both repair units
 
     def repair(self, bus_id: str) -> Generator[Any, None, None]:
@@ -198,9 +200,12 @@ def calculate_statistics(
     avg_repair_queue: float = (
         statistics.mean(repair_queue_lengths) if repair_queue_lengths else 0.0
     )
-
-    utilization_inspection: float = inspection_station.busy_time / SIMULATION_TIME * 100
-    utilization_repair: float = repair_station.busy_time / (2 * SIMULATION_TIME) * 100
+    utilization_inspection: float = (
+        inspection_station.busy_time / (INSPECTION_CAPACITY * SIMULATION_TIME) * 100
+    )
+    utilization_repair: float = (
+        repair_station.busy_time / (REPAIR_CAPACITY * SIMULATION_TIME) * 100
+    )
 
     return {
         "avg_inspection_wait": avg_inspection_wait,
