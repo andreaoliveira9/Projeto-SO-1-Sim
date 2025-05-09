@@ -153,17 +153,19 @@ def calculate_statistics() -> Dict[str, float]:
     avg_repair_queue = (
         statistics.mean(repair_queue_lengths) if repair_queue_lengths else 0.0
     )
-    util_inspection = (
+    utilization_inspection = (
         total_inspection_service / (INSPECTION_CAPACITY * SIMULATION_TIME) * 100
     )
-    util_repair = total_repair_service / (REPAIR_CAPACITY * SIMULATION_TIME) * 100
+    utilization_repair = (
+        total_repair_service / (REPAIR_CAPACITY * SIMULATION_TIME) * 100
+    )
     return {
         "avg_inspection_wait": avg_inspection_wait,
         "avg_repair_wait": avg_repair_wait,
         "avg_inspection_queue": avg_inspection_queue,
         "avg_repair_queue": avg_repair_queue,
-        "util_inspection": util_inspection,
-        "util_repair": util_repair,
+        "utilization_inspection": utilization_inspection,
+        "utilization_repair": utilization_repair,
     }
 
 
