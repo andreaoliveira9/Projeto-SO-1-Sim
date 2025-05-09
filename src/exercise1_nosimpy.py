@@ -115,7 +115,6 @@ def handle_end_repair(
 ) -> None:
     """Process end of repair, start next repair if queued."""
     global repair_busy, total_repair_service
-    bus_id = data["bus_id"]
     repair_busy -= 1
     if repair_queue:
         nxt = repair_queue.pop(0)
