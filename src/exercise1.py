@@ -20,13 +20,6 @@ REPAIR_PROB: float = 0.3  # Probability that a bus requires repair
 
 SAMPLE_INTERVAL: float = 0.1  # Interval for sampling queue lengths
 
-# Mapping of event types to their handler functions (excluding 'sample')
-EVENT_HANDLERS: Dict[str, Callable[..., Any]] = {
-    "arrival": handle_arrival,
-    "end_inspection": handle_end_inspection,
-    "end_repair": handle_end_repair,
-}
-
 
 # Global statistics
 inspection_wait_times: List[float] = []
@@ -187,6 +180,14 @@ def report_statistics(stats: Dict[str, float]) -> None:
     print(f"Average queue length at repair: {stats['avg_repair_queue']:.3f}")
     print(f"Inspection station utilization: {stats['util_inspection']:.3f} %")
     print(f"Repair station utilization: {stats['util_repair']:.3f} %")
+
+
+# Mapping of event types to their handler functions (excluding 'sample')
+EVENT_HANDLERS: Dict[str, Callable[..., Any]] = {
+    "arrival": handle_arrival,
+    "end_inspection": handle_end_inspection,
+    "end_repair": handle_end_repair,
+}
 
 
 def run_simulation() -> None:
