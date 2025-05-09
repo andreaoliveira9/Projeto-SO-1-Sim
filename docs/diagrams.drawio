@@ -1,6 +1,6 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.2 Chrome/134.0.6998.205 Electron/35.3.0 Safari/537.36" version="27.0.2">
   <diagram name="Fluxogramas" id="xQIqP9B8EkHaDndvP4lS">
-    <mxGraphModel dx="2282" dy="1126" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1773" dy="732" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -13,7 +13,7 @@
         <mxCell id="2UPEshlx9W18VEsSvaUy-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="2UPEshlx9W18VEsSvaUy-4" target="2UPEshlx9W18VEsSvaUy-6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="2UPEshlx9W18VEsSvaUy-4" value="Registar chegada&lt;br&gt;(coletar estatísticas)" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
+        <mxCell id="2UPEshlx9W18VEsSvaUy-4" value="Registar chegada" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="-130" y="480" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="2UPEshlx9W18VEsSvaUy-5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="2UPEshlx9W18VEsSvaUy-6" target="2UPEshlx9W18VEsSvaUy-16" edge="1">
@@ -141,7 +141,7 @@
         <mxCell id="2UPEshlx9W18VEsSvaUy-39" value="&lt;div&gt;Evento&lt;/div&gt;&lt;div&gt;Fim da Reparação&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="860" y="400" width="120" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="nL295JHVEjOsVsGAnOce-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="2UPEshlx9W18VEsSvaUy-41" target="nL295JHVEjOsVsGAnOce-1">
+        <mxCell id="nL295JHVEjOsVsGAnOce-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="2UPEshlx9W18VEsSvaUy-41" target="nL295JHVEjOsVsGAnOce-1" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="2UPEshlx9W18VEsSvaUy-41" value="Libertar estação de reparação" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -150,10 +150,10 @@
         <mxCell id="2UPEshlx9W18VEsSvaUy-42" value="Retomar" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="860" y="660" width="120" height="60" as="geometry" />
         </mxCell>
-        <mxCell id="nL295JHVEjOsVsGAnOce-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="nL295JHVEjOsVsGAnOce-1" target="2UPEshlx9W18VEsSvaUy-42">
+        <mxCell id="nL295JHVEjOsVsGAnOce-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="nL295JHVEjOsVsGAnOce-1" target="2UPEshlx9W18VEsSvaUy-42" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
-        <mxCell id="nL295JHVEjOsVsGAnOce-1" value="Saída do sistema" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+        <mxCell id="nL295JHVEjOsVsGAnOce-1" value="Saída do sistema" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="860" y="570" width="120" height="60" as="geometry" />
         </mxCell>
       </root>
