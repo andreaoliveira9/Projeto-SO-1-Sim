@@ -18,8 +18,6 @@ REPAIR_TIME_MIN: float = 2.1  # Minimum repair duration (hours)
 REPAIR_TIME_MAX: float = 4.5  # Maximum repair duration (hours)
 REPAIR_PROB: float = 0.3  # Probability that a bus requires repair
 
-SAMPLE_INTERVAL: float = 0.1  # Interval for sampling queue lengths
-
 
 # Global statistics
 inspection_wait_times: List[float] = []
@@ -49,13 +47,6 @@ def schedule_event(
 
 
 # --- Modular event handlers and statistics ---
-def handle_sample(event_list: List[Any], current_time: float) -> None:
-    """Sample queue lengths and schedule the next sample."""
-    inspection_queue_lengths.append(len(inspection_queue))
-    repair_queue_lengths.append(len(repair_queue))
-    schedule_event(event_list, current_time + SAMPLE_INTERVAL, "sample", {})
-
-
 def handle_arrival(event_list: List[Any], current_time: float, bus_count: int) -> int:
     """Process a bus arrival event, schedule inspection or enqueue."""
     global inspection_busy, total_inspection_service
@@ -169,7 +160,7 @@ def calculate_statistics() -> Dict[str, float]:
     }
 
 
-def report_statistics(stats: Dict[str, float]) -> None:
+def report(stats: Dict[str, float]) -> None:
     """Print the simulation report based on collected statistics."""
     print("=== Simulation Report ===")
     print(
@@ -197,11 +188,10 @@ def run_simulation() -> None:
     random.seed(RANDOM_SEED)
     current_time: float = 0.0
     event_list: List[Any] = []
-    # Schedule first arrival and first sampling
+    # Schedule first arrival
     schedule_event(
         event_list, random.expovariate(1.0 / MEAN_INTERARRIVAL), "arrival", {}
     )
-    schedule_event(event_list, 0.0, "sample", {})
 
     bus_count: int = 0
 
@@ -210,11 +200,11 @@ def run_simulation() -> None:
         if time > SIMULATION_TIME:
             break
         current_time = time
+        # Record queue length metrics on every event
+        inspection_queue_lengths.append(len(inspection_queue))
+        repair_queue_lengths.append(len(repair_queue))
 
-        if event_type == "sample":
-            handle_sample(event_list, current_time)
-
-        elif event_type == "arrival":
+        if event_type == "arrival":
             bus_count = handle_arrival(event_list, current_time, bus_count)
 
         elif event_type == "end_inspection":
@@ -225,7 +215,7 @@ def run_simulation() -> None:
 
     # Final reporting
     stats = calculate_statistics()
-    report_statistics(stats)
+    report(stats)
 
 
 if __name__ == "__main__":
