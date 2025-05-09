@@ -180,8 +180,8 @@ def report_statistics(stats: Dict[str, float]) -> None:
     )
     print(f"Average queue length at inspection: {stats['avg_inspection_queue']:.3f}")
     print(f"Average queue length at repair: {stats['avg_repair_queue']:.3f}")
-    print(f"Inspection station utilization: {stats['util_inspection']:.3f} %")
-    print(f"Repair station utilization: {stats['util_repair']:.3f} %")
+    print(f"Inspection station utilization: {stats['utilization_inspection']:.3f} %")
+    print(f"Repair station utilization: {stats['utilization_repair']:.3f} %")
 
 
 # Mapping of event types to their handler functions (excluding 'sample')
