@@ -199,6 +199,7 @@ def run_simulation() -> None:
         if time > SIMULATION_TIME:
             break
         current_time = time
+
         # Record queue length metrics on every event
         inspection_queue_lengths.append(len(inspection_queue))
         repair_queue_lengths.append(len(repair_queue))
