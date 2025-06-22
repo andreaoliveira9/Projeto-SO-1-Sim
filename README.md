@@ -1,4 +1,4 @@
-# Projeto-SO-1-Sim
+# Projeto-SO-Sim
 Primeiro projeto Simulação e Otimização
 
 ## How to run
