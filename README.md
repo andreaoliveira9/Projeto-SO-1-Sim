@@ -1,6 +1,8 @@
 # Projeto-SO-Sim
 Primeiro projeto Simulação e Otimização
 
+Nota: 17
+
 ## How to run
 
 1. Clone the repository
