@@ -1,0 +1,9 @@
+X0 = 40  # Initial prey population
+Y0 = 9  # Initial predator population
+ALPHA = 0.1  # Prey birth rate
+BETA = 0.02  # Predation rate
+DELTA = 0.01  # Predator reproduction rate
+GAMMA = 0.1  # Predator death rate
+DT = 0.1  # Time step
+T_FINAL = 100  # Final simulation time
+METHOD = "rk4"  # Default method for simulation
