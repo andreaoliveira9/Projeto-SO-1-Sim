@@ -1,3 +1,4 @@
+import argparse
 import heapq
 import random
 
@@ -31,7 +32,7 @@ clock = 0.0
 last_event_time = 0.0
 
 # Lista de eventos futuros
-# Cada evento é uma tupla: (instante, tipo_evento, dados_opcionais)
+# Cada evento é um tuple: (instante, tipo_evento, dados_opcionais)
 event_list = []
 
 
@@ -186,4 +187,11 @@ def simulate():
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int, help="Seed para aleatoriedade")
+    args = parser.parse_args()
+
+    if args.seed is not None:
+        random.seed(args.seed)
+
     simulate()
