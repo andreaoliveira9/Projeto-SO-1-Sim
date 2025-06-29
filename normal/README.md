@@ -1,4 +1,5 @@
 # Projeto-SO-Sim
+
 Primeiro projeto Simulação e Otimização
 
 Nota: 17
@@ -9,11 +10,11 @@ Nota: 17
 
 ```bash
 git clone git@github.com:andreaoliveira9/Projeto-SimOpt-1.git
-cd Projeto-SimOpt-1
+cd Projeto-SimOpt-1/normal
 ```
 
 1. Create a virtual environment and activate it
-   
+
 ```bash
 python3.13 -m venv venv
 source venv/bin/activate
@@ -63,16 +64,16 @@ python src/exercise2.py --compare --x0 0 --z0 0 --vx0 50 --vz0 50 --drag 0.1 --d
 
 #### Command-line parameters
 
-| Parameter     | Description                                               |
-|---------------|-----------------------------------------------------------|
-| `--method`    | Numerical method to use (`euler` or `rk4`)                |
-| `--compare`   | Runs and compares both methods                            |
-| `--x0`        | Initial position in the x-axis (in meters)                |
-| `--z0`        | Initial position in the z-axis (in meters)                |
-| `--vx0`       | Initial velocity in the x-axis (in m/s)                   |
-| `--vz0`       | Initial velocity in the z-axis (in m/s)                   |
-| `--drag`      | Drag coefficient (air resistance)                         |
-| `--dt`        | Time step of the simulation (in seconds)                  |
-| `--tfinal`    | Total simulation time (in seconds)                        |
-| `--mass`      | Mass of the object (in kg)                                |
-| `--gravity`   | Acceleration due to gravity (in m/s²)                     |
+| Parameter   | Description                                |
+| ----------- | ------------------------------------------ |
+| `--method`  | Numerical method to use (`euler` or `rk4`) |
+| `--compare` | Runs and compares both methods             |
+| `--x0`      | Initial position in the x-axis (in meters) |
+| `--z0`      | Initial position in the z-axis (in meters) |
+| `--vx0`     | Initial velocity in the x-axis (in m/s)    |
+| `--vz0`     | Initial velocity in the z-axis (in m/s)    |
+| `--drag`    | Drag coefficient (air resistance)          |
+| `--dt`      | Time step of the simulation (in seconds)   |
+| `--tfinal`  | Total simulation time (in seconds)         |
+| `--mass`    | Mass of the object (in kg)                 |
+| `--gravity` | Acceleration due to gravity (in m/s²)      |
