@@ -11,6 +11,8 @@ UNIF_SERVICE_TYPE2_MAX = 0.7
 P_TYPE1 = 0.8
 SIM_TIME = 1000.0
 
+VERBOSE = False
+
 # Estado dos servidores
 servers_A = [False, False]  # dois servidores tipo A
 servers_B = [False]  # um servidor tipo B
@@ -92,6 +94,28 @@ def serve_type2(idx_A, idx_B):
     return service_time
 
 
+def try_serve_type1_from_queue(idx, server_type):
+    if queue_type1:
+        arrival_time = queue_type1.popleft()
+        delay = clock - arrival_time
+        delays_type1.append(delay)
+        service_time = serve_type1(idx, server_type)
+        waiting_times_type1.append(delay + service_time)
+        return True
+    return False
+
+
+def try_serve_type2_from_queue(idx_A, idx_B):
+    if queue_type2:
+        arrival_time = queue_type2.popleft()
+        delay = clock - arrival_time
+        delays_type2.append(delay)
+        service_time = serve_type2(idx_A, idx_B)
+        waiting_times_type2.append(delay + service_time)
+        return True
+    return False
+
+
 def arrival():
     """Handles arrival events, assigns customers to servers or queues."""
     global clock
@@ -135,25 +159,16 @@ def departure_type1(info):
 
     idx_A = server_idx if server_type == "A" else find_free_server(servers_A)
     idx_B = server_idx if server_type == "B" else find_free_server(servers_B)
-    if queue_type2 and idx_A is not None and idx_B is not None:
-        arrival_time = queue_type2.popleft()
-        delay = clock - arrival_time
-        delays_type2.append(delay)
-        service_time = serve_type2(idx_A, idx_B)
-        waiting_times_type2.append(delay + service_time)
-    elif queue_type1:
-        if idx_A is not None:
-            arrival_time = queue_type1.popleft()
-            delay = clock - arrival_time
-            delays_type1.append(delay)
-            service_time = serve_type1(idx_A, "A")
-            waiting_times_type1.append(delay + service_time)
-        elif idx_B is not None:
-            arrival_time = queue_type1.popleft()
-            delay = clock - arrival_time
-            delays_type1.append(delay)
-            service_time = serve_type1(idx_B, "B")
-            waiting_times_type1.append(delay + service_time)
+    if (
+        idx_A is not None
+        and idx_B is not None
+        and try_serve_type2_from_queue(idx_A, idx_B)
+    ):
+        return
+    if idx_A is not None and try_serve_type1_from_queue(idx_A, "A"):
+        return
+    if idx_B is not None and try_serve_type1_from_queue(idx_B, "B"):
+        return
 
 
 def departure_type2(indices):
@@ -165,18 +180,10 @@ def departure_type2(indices):
     servers_B[server_idx_B] = False
     server_B_type[server_idx_B] = None
 
-    if queue_type2:
-        arrival_time = queue_type2.popleft()
-        delay = clock - arrival_time
-        delays_type2.append(delay)
-        service_time = serve_type2(server_idx_A, server_idx_B)
-        waiting_times_type2.append(delay + service_time)
-    elif queue_type1 and not servers_A[server_idx_A]:
-        arrival_time = queue_type1.popleft()
-        delay = clock - arrival_time
-        delays_type1.append(delay)
-        service_time = serve_type1(server_idx_A, "A")
-        waiting_times_type1.append(delay + service_time)
+    if try_serve_type2_from_queue(server_idx_A, server_idx_B):
+        return
+    elif try_serve_type1_from_queue(server_idx_A, "A"):
+        return
 
 
 def format_time(minutes):
@@ -208,6 +215,7 @@ def report():
     mean_num_in_system_type1 = area_num_in_system_type1 / SIM_TIME
     mean_num_in_system_type2 = area_num_in_system_type2 / SIM_TIME
 
+    print("\n--------------------Relatório da Simulação--------------------")
     print("Tipo 1 - atraso médio:", format_time(mean_delay_type1))
     print("Tipo 2 - atraso médio:", format_time(mean_delay_type2))
     print("Tipo 1 - tempo médio no sistema:", format_time(mean_waiting_time_type1))
@@ -231,10 +239,13 @@ def simulate():
     """Runs the simulation until the specified simulation time is reached."""
     global clock, last_event_time, area_num_in_queue_type1, area_num_in_queue_type2, area_num_in_system_type1, area_num_in_system_type2
 
+    # Início da simulação: agenda o primeiro evento de chegada
     schedule_event(0.0, "arrival")
 
     while event_list and clock < SIM_TIME:
         clock, event_type, data = heapq.heappop(event_list)
+        if VERBOSE:
+            print(f"[{clock:.2f}] Evento: {event_type}, dados: {data}")
         dt = clock - last_event_time
         area_num_in_queue_type1 += len(queue_type1) * dt
         area_num_in_queue_type2 += len(queue_type2) * dt
@@ -266,9 +277,14 @@ def simulate():
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="Seed para aleatoriedade")
+    parser.add_argument(
+        "--verbose", action="store_true", help="Ativa o modo verboso de saída"
+    )
     args = parser.parse_args()
 
-    if args.seed is not None:
+    if args.seed:
         random.seed(args.seed)
+    if args.verbose:
+        VERBOSE = True
 
     simulate()
