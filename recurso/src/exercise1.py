@@ -64,6 +64,32 @@ def find_free_server(servers):
     return None
 
 
+def serve_type1(idx, server_type):
+    service_time = exponential(MEAN_SERVICE_TYPE1)
+    if server_type == "A":
+        servers_A[idx] = True
+        server_A_type[idx] = "type1"
+        server_A_time_type1[idx] += service_time
+    else:
+        servers_B[idx] = True
+        server_B_type[idx] = "type1"
+        server_B_time_type1[idx] += service_time
+    schedule_event(clock + service_time, "departure_type1", (server_type, idx))
+    return service_time
+
+
+def serve_type2(idx_A, idx_B):
+    service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
+    servers_A[idx_A] = True
+    servers_B[idx_B] = True
+    server_A_type[idx_A] = "type2"
+    server_B_type[idx_B] = "type2"
+    server_A_time_type2[idx_A] += service_time
+    server_B_time_type2[idx_B] += service_time
+    schedule_event(clock + service_time, "departure_type2", (idx_A, idx_B))
+    return service_time
+
+
 def arrival():
     global clock
 
@@ -76,19 +102,11 @@ def arrival():
         # Tipo 1
         idx_A = find_free_server(servers_A)
         if idx_A is not None:
-            service_time = exponential(MEAN_SERVICE_TYPE1)
-            servers_A[idx_A] = True
-            server_A_type[idx_A] = "type1"
-            server_A_time_type1[idx_A] += service_time
-            schedule_event(clock + service_time, "departure_type1", ("A", idx_A))
+            serve_type1(idx_A, "A")
         else:
             idx_B = find_free_server(servers_B)
             if idx_B is not None:
-                service_time = exponential(MEAN_SERVICE_TYPE1)
-                servers_B[idx_B] = True
-                server_B_type[idx_B] = "type1"
-                server_B_time_type1[idx_B] += service_time
-                schedule_event(clock + service_time, "departure_type1", ("B", idx_B))
+                serve_type1(idx_B, "B")
             else:
                 queue_type1.append(clock)
     else:
@@ -96,14 +114,7 @@ def arrival():
         idx_A = find_free_server(servers_A)
         idx_B = find_free_server(servers_B)
         if idx_A is not None and idx_B is not None:
-            service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
-            servers_A[idx_A] = True
-            servers_B[idx_B] = True
-            server_A_type[idx_A] = "type2"
-            server_B_type[idx_B] = "type2"
-            server_A_time_type2[idx_A] += service_time
-            server_B_time_type2[idx_B] += service_time
-            schedule_event(clock + service_time, "departure_type2", (idx_A, idx_B))
+            serve_type2(idx_A, idx_B)
         else:
             queue_type2.append(clock)
 
@@ -124,36 +135,21 @@ def departure_type1(info):
         arrival_time = queue_type2.pop(0)
         delay = clock - arrival_time
         delays_type2.append(delay)
-        service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
+        service_time = serve_type2(idx_A, idx_B)
         waiting_times_type2.append(delay + service_time)
-        servers_A[idx_A] = True
-        servers_B[idx_B] = True
-        server_A_type[idx_A] = "type2"
-        server_B_type[idx_B] = "type2"
-        server_A_time_type2[idx_A] += service_time
-        server_B_time_type2[idx_B] += service_time
-        schedule_event(clock + service_time, "departure_type2", (idx_A, idx_B))
     elif queue_type1:
         if idx_A is not None:
             arrival_time = queue_type1.pop(0)
             delay = clock - arrival_time
             delays_type1.append(delay)
-            service_time = exponential(MEAN_SERVICE_TYPE1)
+            service_time = serve_type1(idx_A, "A")
             waiting_times_type1.append(delay + service_time)
-            servers_A[idx_A] = True
-            server_A_type[idx_A] = "type1"
-            server_A_time_type1[idx_A] += service_time
-            schedule_event(clock + service_time, "departure_type1", ("A", idx_A))
         elif idx_B is not None:
             arrival_time = queue_type1.pop(0)
             delay = clock - arrival_time
             delays_type1.append(delay)
-            service_time = exponential(MEAN_SERVICE_TYPE1)
+            service_time = serve_type1(idx_B, "B")
             waiting_times_type1.append(delay + service_time)
-            servers_B[idx_B] = True
-            server_B_type[idx_B] = "type1"
-            server_B_time_type1[idx_B] += service_time
-            schedule_event(clock + service_time, "departure_type1", ("B", idx_B))
 
 
 def departure_type2(indices):
@@ -168,27 +164,14 @@ def departure_type2(indices):
         arrival_time = queue_type2.pop(0)
         delay = clock - arrival_time
         delays_type2.append(delay)
-        service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
+        service_time = serve_type2(server_idx_A, server_idx_B)
         waiting_times_type2.append(delay + service_time)
-        servers_A[server_idx_A] = True
-        servers_B[server_idx_B] = True
-        server_A_type[server_idx_A] = "type2"
-        server_B_type[server_idx_B] = "type2"
-        server_A_time_type2[server_idx_A] += service_time
-        server_B_time_type2[server_idx_B] += service_time
-        schedule_event(
-            clock + service_time, "departure_type2", (server_idx_A, server_idx_B)
-        )
     elif queue_type1:
         arrival_time = queue_type1.pop(0)
         delay = clock - arrival_time
         delays_type1.append(delay)
-        service_time = exponential(MEAN_SERVICE_TYPE1)
+        service_time = serve_type1(server_idx_A, "A")
         waiting_times_type1.append(delay + service_time)
-        servers_A[server_idx_A] = True
-        server_A_type[server_idx_A] = "type1"
-        server_A_time_type1[server_idx_A] += service_time
-        schedule_event(clock + service_time, "departure_type1", ("A", server_idx_A))
 
 
 def format_time(minutes):
