@@ -7,3 +7,4 @@ GAMMA = 0.1  # Predator death rate
 DT = 0.1  # Time step
 T_FINAL = 100  # Final simulation time
 METHOD = "rk4"  # Default method for simulation
+SAVE_PATH = "./results"

@@ -39,7 +39,10 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
 
     plt.suptitle(f"Comparação dos métodos de Euler e RK4 (dt = {dt}s)")
     plt.tight_layout()
-    plt.show()
+    if save_path:
+        plt.savefig(f"{save_path}/comparacao_euler_rk4_{dt}.png")
+    else:
+        plt.show()
 
 
 def plot_single(times, xs, ys, method, dt, save_path=None):
@@ -50,4 +53,7 @@ def plot_single(times, xs, ys, method, dt, save_path=None):
     plt.title(f"Método de {method.upper()} (dt = {dt})")
     plt.legend()
     plt.grid(True)
-    plt.show()
+    if save_path:
+        plt.savefig(f"{save_path}/metodo_{method.lower()}_{dt}.png")
+    else:
+        plt.show()

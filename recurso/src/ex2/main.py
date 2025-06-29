@@ -1,5 +1,6 @@
 import argparse
 import config
+import os
 from euler import simulate_euler
 from rk4 import simulate_rk4
 from plotting import plot_comparison, plot_single
@@ -18,34 +19,63 @@ if __name__ == "__main__":
         "--method",
         choices=["euler", "rk4"],
         default=config.METHOD,
-        help="Integration method",
     )
     parser.add_argument(
         "--compare",
         action="store_true",
-        help="Compare Euler and RK4 methods on the same plot",
     )
+    parser.add_argument("--save_path", type=str, default=config.SAVE_PATH)
     args = parser.parse_args()
+
+    if args.save_path:
+        if not os.path.exists(args.save_path):
+            os.makedirs(args.save_path)
 
     if args.compare:
         times_e, xs_e, ys_e = simulate_euler(
-            args.x0, args.y0, args.alpha, args.beta,
-            args.delta, args.gamma, args.dt, args.tfinal
+            args.x0,
+            args.y0,
+            args.alpha,
+            args.beta,
+            args.delta,
+            args.gamma,
+            args.dt,
+            args.tfinal,
         )
         times_rk, xs_rk, ys_rk = simulate_rk4(
-            args.x0, args.y0, args.alpha, args.beta,
-            args.delta, args.gamma, args.dt, args.tfinal
+            args.x0,
+            args.y0,
+            args.alpha,
+            args.beta,
+            args.delta,
+            args.gamma,
+            args.dt,
+            args.tfinal,
         )
-        plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, args.dt)
+        plot_comparison(
+            times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, args.dt, args.save_path
+        )
     else:
         if args.method == "euler":
             times, xs, ys = simulate_euler(
-                args.x0, args.y0, args.alpha, args.beta,
-                args.delta, args.gamma, args.dt, args.tfinal
+                args.x0,
+                args.y0,
+                args.alpha,
+                args.beta,
+                args.delta,
+                args.gamma,
+                args.dt,
+                args.tfinal,
             )
         else:
             times, xs, ys = simulate_rk4(
-                args.x0, args.y0, args.alpha, args.beta,
-                args.delta, args.gamma, args.dt, args.tfinal
+                args.x0,
+                args.y0,
+                args.alpha,
+                args.beta,
+                args.delta,
+                args.gamma,
+                args.dt,
+                args.tfinal,
             )
-        plot_single(times, xs, ys, args.method, args.dt)
+        plot_single(times, xs, ys, args.method, args.dt, args.save_path)
