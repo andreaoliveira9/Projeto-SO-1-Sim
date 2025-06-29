@@ -24,6 +24,5 @@ if __name__ == "__main__":
 
     config.NUM_SERVERS_A = args.serversA
     config.NUM_SERVERS_B = args.serversB
-    print(config.NUM_SERVERS_B)
 
     simulate()
