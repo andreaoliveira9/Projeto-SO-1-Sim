@@ -1,7 +1,7 @@
+from collections import deque
 import argparse
 import heapq
 import random
-import math
 
 # Parâmetros da simulação
 MEAN_INTERARRIVAL = 1.0
@@ -19,8 +19,8 @@ server_A_type = [None for _ in servers_A]  # "type1" ou "type2"
 server_B_type = [None for _ in servers_B]
 
 # Filas
-queue_type1 = []
-queue_type2 = []
+queue_type1 = deque()
+queue_type2 = deque()
 
 # Contadores estatísticos
 delays_type1 = []
@@ -65,6 +65,7 @@ def find_free_server(servers):
 
 
 def serve_type1(idx, server_type):
+    """Serve a type 1 customer on the specified server and schedules departure."""
     service_time = exponential(MEAN_SERVICE_TYPE1)
     if server_type == "A":
         servers_A[idx] = True
@@ -79,6 +80,7 @@ def serve_type1(idx, server_type):
 
 
 def serve_type2(idx_A, idx_B):
+    """Serve a type 2 customer using servers A and B, and schedules departure."""
     service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
     servers_A[idx_A] = True
     servers_B[idx_B] = True
@@ -91,6 +93,7 @@ def serve_type2(idx_A, idx_B):
 
 
 def arrival():
+    """Handles arrival events, assigns customers to servers or queues."""
     global clock
 
     # Agendar próxima chegada
@@ -120,6 +123,7 @@ def arrival():
 
 
 def departure_type1(info):
+    """Handles departure events for type 1 customers and manages queue servicing."""
     server_type, server_idx = info
 
     if server_type == "A":
@@ -132,20 +136,20 @@ def departure_type1(info):
     idx_A = server_idx if server_type == "A" else find_free_server(servers_A)
     idx_B = server_idx if server_type == "B" else find_free_server(servers_B)
     if queue_type2 and idx_A is not None and idx_B is not None:
-        arrival_time = queue_type2.pop(0)
+        arrival_time = queue_type2.popleft()
         delay = clock - arrival_time
         delays_type2.append(delay)
         service_time = serve_type2(idx_A, idx_B)
         waiting_times_type2.append(delay + service_time)
     elif queue_type1:
         if idx_A is not None:
-            arrival_time = queue_type1.pop(0)
+            arrival_time = queue_type1.popleft()
             delay = clock - arrival_time
             delays_type1.append(delay)
             service_time = serve_type1(idx_A, "A")
             waiting_times_type1.append(delay + service_time)
         elif idx_B is not None:
-            arrival_time = queue_type1.pop(0)
+            arrival_time = queue_type1.popleft()
             delay = clock - arrival_time
             delays_type1.append(delay)
             service_time = serve_type1(idx_B, "B")
@@ -153,6 +157,7 @@ def departure_type1(info):
 
 
 def departure_type2(indices):
+    """Handles departure events for type 2 customers and manages queue servicing."""
     server_idx_A, server_idx_B = indices
 
     servers_A[server_idx_A] = False
@@ -161,13 +166,13 @@ def departure_type2(indices):
     server_B_type[server_idx_B] = None
 
     if queue_type2:
-        arrival_time = queue_type2.pop(0)
+        arrival_time = queue_type2.popleft()
         delay = clock - arrival_time
         delays_type2.append(delay)
         service_time = serve_type2(server_idx_A, server_idx_B)
         waiting_times_type2.append(delay + service_time)
-    elif queue_type1:
-        arrival_time = queue_type1.pop(0)
+    elif queue_type1 and not servers_A[server_idx_A]:
+        arrival_time = queue_type1.popleft()
         delay = clock - arrival_time
         delays_type1.append(delay)
         service_time = serve_type1(server_idx_A, "A")
@@ -175,6 +180,7 @@ def departure_type2(indices):
 
 
 def format_time(minutes):
+    """Converts a time in minutes to a formatted string of hours, minutes, and seconds."""
     h = int(minutes // 60)
     m = int(minutes % 60)
     s = int((minutes - int(minutes)) * 60)
@@ -182,6 +188,7 @@ def format_time(minutes):
 
 
 def report():
+    """Prints a report of the simulation statistics."""
     global area_num_in_queue_type1, area_num_in_queue_type2
 
     mean_delay_type1 = sum(delays_type1) / len(delays_type1) if delays_type1 else 0
@@ -221,6 +228,7 @@ def report():
 
 
 def simulate():
+    """Runs the simulation until the specified simulation time is reached."""
     global clock, last_event_time, area_num_in_queue_type1, area_num_in_queue_type2, area_num_in_system_type1, area_num_in_system_type2
 
     schedule_event(0.0, "arrival")
