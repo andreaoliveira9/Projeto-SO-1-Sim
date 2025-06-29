@@ -1,0 +1,68 @@
+delays_type1 = []
+delays_type2 = []
+waiting_times_type1 = []
+waiting_times_type2 = []
+area_num_in_queue_type1 = 0.0
+area_num_in_queue_type2 = 0.0
+area_num_in_system_type1 = 0.0
+area_num_in_system_type2 = 0.0
+server_A_time_type1 = []
+server_A_time_type2 = []
+server_B_time_type1 = []
+server_B_time_type2 = []
+
+
+def format_time(minutes):
+    """Converts a time in minutes to a formatted string of hours, minutes, and seconds."""
+    h = int(minutes // 60)
+    m = int(minutes % 60)
+    s = int((minutes - int(minutes)) * 60)
+    return f"{h}h {m}m {s}s"
+
+
+def report():
+    """Prints a report of the simulation statistics."""
+    import config
+
+    global area_num_in_queue_type1, area_num_in_queue_type2
+    global delays_type1, delays_type2
+    global waiting_times_type1, waiting_times_type2
+    global area_num_in_system_type1, area_num_in_system_type2
+    global server_A_time_type1, server_A_time_type2, server_B_time_type1, server_B_time_type2
+
+    mean_delay_type1 = sum(delays_type1) / len(delays_type1) if delays_type1 else 0
+    mean_delay_type2 = sum(delays_type2) / len(delays_type2) if delays_type2 else 0
+    mean_waiting_time_type1 = (
+        sum(waiting_times_type1) / len(waiting_times_type1)
+        if waiting_times_type1
+        else 0
+    )
+    mean_waiting_time_type2 = (
+        sum(waiting_times_type2) / len(waiting_times_type2)
+        if waiting_times_type2
+        else 0
+    )
+    mean_area_num_in_queue_type1 = area_num_in_queue_type1 / config.SIM_TIME
+    mean_area_num_in_queue_type2 = area_num_in_queue_type2 / config.SIM_TIME
+    mean_num_in_system_type1 = area_num_in_system_type1 / config.SIM_TIME
+    mean_num_in_system_type2 = area_num_in_system_type2 / config.SIM_TIME
+
+    print("\n--------------------Relatório da Simulação--------------------")
+    print("Tipo 1 - atraso médio:", format_time(mean_delay_type1))
+    print("Tipo 2 - atraso médio:", format_time(mean_delay_type2))
+    print("Tipo 1 - tempo médio no sistema:", format_time(mean_waiting_time_type1))
+    print("Tipo 2 - tempo médio no sistema:", format_time(mean_waiting_time_type2))
+    print("Tipo 1 - número médio na fila:", mean_area_num_in_queue_type1)
+    print("Tipo 2 - número médio na fila:", mean_area_num_in_queue_type2)
+    print("Tipo 1 - número médio no sistema:", mean_num_in_system_type1)
+    print("Tipo 2 - número médio no sistema:", mean_num_in_system_type2)
+
+    for i in range(len(server_A_time_type1)):
+        print(
+            f"Servidor A{i+1} - % tempo com tipo 1: {100 * server_A_time_type1[i] / config.SIM_TIME:.2f}%, tipo 2: {100 * server_A_time_type2[i] / config.SIM_TIME:.2f}%"
+        )
+    for i in range(len(server_B_time_type1)):
+        print(
+            f"Servidor B{i+1} - % tempo com tipo 1: {100 * server_B_time_type1[i] / config.SIM_TIME:.2f}%, tipo 2: {100 * server_B_time_type2[i] / config.SIM_TIME:.2f}%"
+        )
+    print("-------------------------------------------------------------\n")

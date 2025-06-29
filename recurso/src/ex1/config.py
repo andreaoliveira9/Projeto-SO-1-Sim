@@ -1,0 +1,10 @@
+MEAN_INTERARRIVAL = 1.0          # Média do tempo entre chegadas (exponencial) — 1 minuto
+MEAN_SERVICE_TYPE1 = 0.8         # Média do tempo de serviço para clientes tipo 1 (exponencial)
+UNIF_SERVICE_TYPE2_MIN = 0.5     # Limite inferior do tempo de serviço para clientes tipo 2 (uniforme)
+UNIF_SERVICE_TYPE2_MAX = 0.7     # Limite superior do tempo de serviço para clientes tipo 2 (uniforme)
+P_TYPE1 = 0.8                    # Probabilidade de um cliente ser tipo 1 (tipo 2 será 0.2)
+SIM_TIME = 1000.0                # Tempo total de simulação em minutos
+NUM_SERVERS_A = 2              # Número de servidores do tipo A
+NUM_SERVERS_B = 1              # Número de servidores do tipo B
+
+VERBOSE = False                  # Controlo de logging detalhado (ativar com --verbose)
