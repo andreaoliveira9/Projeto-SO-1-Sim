@@ -12,7 +12,7 @@ SIM_TIME = 1000.0
 
 # Estado dos servidores
 servers_A = [False, False]  # dois servidores tipo A
-server_B = False  # um servidor tipo B
+servers_B = [False]  # um servidor tipo B
 
 # Filas
 queue_type1 = []
@@ -23,9 +23,10 @@ delays_type1 = []
 delays_type2 = []
 area_num_in_queue_type1 = 0.0
 area_num_in_queue_type2 = 0.0
-server_A_time_type1 = [0.0, 0.0]
-server_A_time_type2 = [0.0, 0.0]
-server_B_time_type2 = 0.0
+server_A_time_type1 = [0.0 for _ in servers_A]
+server_A_time_type2 = [0.0 for _ in servers_A]
+server_B_time_type1 = [0.0 for _ in servers_B]
+server_B_time_type2 = [0.0 for _ in servers_B]
 
 # Relógio da simulação
 clock = 0.0
@@ -48,8 +49,8 @@ def uniform(a, b):
     return random.uniform(a, b)
 
 
-def find_free_server_A():
-    for i, busy in enumerate(servers_A):
+def find_free_server(servers):
+    for i, busy in enumerate(servers):
         if not busy:
             return i
     return None
@@ -65,85 +66,120 @@ def arrival():
     # Determinar tipo de cliente
     if random.random() < P_TYPE1:
         # Tipo 1
-        idx = find_free_server_A()
-        if idx is not None:
-            # Servidor A disponível
+        idx_A = find_free_server(servers_A)
+        if idx_A is not None:
             service_time = exponential(MEAN_SERVICE_TYPE1)
-            servers_A[idx] = True
-            server_A_time_type1[idx] += service_time
-            schedule_event(clock + service_time, "departure_type1", idx)
+            servers_A[idx_A] = True
+            server_A_time_type1[idx_A] += service_time
+            schedule_event(clock + service_time, "departure_type1", ("A", idx_A))
         else:
-            queue_type1.append(clock)
+            idx_B = find_free_server(servers_B)
+            if idx_B is not None:
+                service_time = exponential(MEAN_SERVICE_TYPE1)
+                servers_B[idx_B] = True
+                server_B_time_type1[idx_B] += service_time
+                schedule_event(clock + service_time, "departure_type1", ("B", idx_B))
+            else:
+                queue_type1.append(clock)
     else:
         # Tipo 2
-        idx_A = find_free_server_A()
-        global server_B
-        if idx_A is not None and not server_B:
+        idx_A = find_free_server(servers_A)
+        idx_B = find_free_server(servers_B)
+        if idx_A is not None and idx_B is not None:
             service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
             servers_A[idx_A] = True
-            server_B = True
+            servers_B[idx_B] = True
             server_A_time_type2[idx_A] += service_time
-            global server_B_time_type2
-            server_B_time_type2 += service_time
-            schedule_event(clock + service_time, "departure_type2", idx_A)
+            server_B_time_type2[idx_B] += service_time
+            schedule_event(clock + service_time, "departure_type2", (idx_A, idx_B))
         else:
             queue_type2.append(clock)
 
 
-def departure_type1(server_idx):
-    global servers_A, server_B
+def departure_type1(info):
+    server_type, server_idx = info
 
-    servers_A[server_idx] = False
+    if server_type == "A":
+        servers_A[server_idx] = False
+    else:
+        servers_B[server_idx] = False
 
-    # Prioridade para tipo 2
-    if queue_type2 and not server_B:
+    idx_B = find_free_server(servers_B)
+    if queue_type2 and idx_B is not None and server_type == "A":
         arrival_time = queue_type2.pop(0)
         delay = clock - arrival_time
         delays_type2.append(delay)
         service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
         servers_A[server_idx] = True
-        server_B = True
+        servers_B[idx_B] = True
         server_A_time_type2[server_idx] += service_time
-        global server_B_time_type2
-        server_B_time_type2 += service_time
-        schedule_event(clock + service_time, "departure_type2", server_idx)
+        server_B_time_type2[idx_B] += service_time
+        schedule_event(clock + service_time, "departure_type2", (server_idx, idx_B))
     elif queue_type1:
         arrival_time = queue_type1.pop(0)
         delay = clock - arrival_time
         delays_type1.append(delay)
         service_time = exponential(MEAN_SERVICE_TYPE1)
-        servers_A[server_idx] = True
-        server_A_time_type1[server_idx] += service_time
-        schedule_event(clock + service_time, "departure_type1", server_idx)
+        if server_type == "A":
+            servers_A[server_idx] = True
+            server_A_time_type1[server_idx] += service_time
+            schedule_event(clock + service_time, "departure_type1", ("A", server_idx))
+        else:
+            servers_B[server_idx] = True
+            server_B_time_type1[server_idx] += service_time
+            schedule_event(clock + service_time, "departure_type1", ("B", server_idx))
 
 
-def departure_type2(server_idx):
-    global servers_A, server_B
+def departure_type2(indices):
+    server_idx_A, server_idx_B = indices
 
-    servers_A[server_idx] = False
-    server_B = False
+    servers_A[server_idx_A] = False
+    servers_B[server_idx_B] = False
 
-    if queue_type2:
-        idx_A = find_free_server_A()
-        if idx_A is not None and not server_B:
-            arrival_time = queue_type2.pop(0)
-            delay = clock - arrival_time
-            delays_type2.append(delay)
-            service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
-            servers_A[idx_A] = True
-            server_B = True
-            server_A_time_type2[idx_A] += service_time
-            global server_B_time_type2
-            server_B_time_type2 += service_time
-            schedule_event(clock + service_time, "departure_type2", idx_A)
+    idx_A = find_free_server(servers_A)
+    idx_B = find_free_server(servers_B)
+    if queue_type2 and idx_A is not None and idx_B is not None:
+        arrival_time = queue_type2.pop(0)
+        delay = clock - arrival_time
+        delays_type2.append(delay)
+        service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
+        servers_A[idx_A] = True
+        servers_B[idx_B] = True
+        server_A_time_type2[idx_A] += service_time
+        server_B_time_type2[idx_B] += service_time
+        schedule_event(clock + service_time, "departure_type2", (idx_A, idx_B))
     elif queue_type1:
         arrival_time = queue_type1.pop(0)
         delay = clock - arrival_time
         delays_type1.append(delay)
         service_time = exponential(MEAN_SERVICE_TYPE1)
-        servers_A[server_idx] = True
-        server_A_time_type1[server_idx] += service_time
-        schedule_event(clock + service_time, "departure_type1", server_idx)
+        servers_A[server_idx_A] = True
+        server_A_time_type1[server_idx_A] += service_time
+        schedule_event(clock + service_time, "departure_type1", ("A", server_idx_A))
+
+
+def report():
+    global area_num_in_queue_type1, area_num_in_queue_type2
+
+    print(
+        "Tipo 1 - atraso médio:",
+        sum(delays_type1) / len(delays_type1) if delays_type1 else 0,
+    )
+    print(
+        "Tipo 2 - atraso médio:",
+        sum(delays_type2) / len(delays_type2) if delays_type2 else 0,
+    )
+    print("Tipo 1 - número médio na fila:", area_num_in_queue_type1 / SIM_TIME)
+    print("Tipo 2 - número médio na fila:", area_num_in_queue_type2 / SIM_TIME)
+    for i in range(2):
+        total = server_A_time_type1[i] + server_A_time_type2[i]
+        print(
+            f"Servidor A{i+1} - % tempo com tipo 1: {100 * server_A_time_type1[i] / SIM_TIME:.2f}%, tipo 2: {100 * server_A_time_type2[i] / SIM_TIME:.2f}%"
+        )
+    for i in range(len(servers_B)):
+        print(
+            f"Servidor B{i+1} - % tempo com tipo 1: {100 * server_B_time_type1[i] / SIM_TIME:.2f}%, tipo 2: {100 * server_B_time_type2[i] / SIM_TIME:.2f}%"
+        )
 
 
 def simulate():
@@ -166,24 +202,7 @@ def simulate():
             departure_type2(data)
 
     # Resultados
-    print(
-        "Tipo 1 - atraso médio:",
-        sum(delays_type1) / len(delays_type1) if delays_type1 else 0,
-    )
-    print(
-        "Tipo 2 - atraso médio:",
-        sum(delays_type2) / len(delays_type2) if delays_type2 else 0,
-    )
-    print("Tipo 1 - número médio na fila:", area_num_in_queue_type1 / SIM_TIME)
-    print("Tipo 2 - número médio na fila:", area_num_in_queue_type2 / SIM_TIME)
-    for i in range(2):
-        total = server_A_time_type1[i] + server_A_time_type2[i]
-        print(
-            f"Servidor A{i+1} - % tempo com tipo 1: {100 * server_A_time_type1[i] / SIM_TIME:.2f}%, tipo 2: {100 * server_A_time_type2[i] / SIM_TIME:.2f}%"
-        )
-    print(
-        f"Servidor B - % tempo com tipo 2: {100 * server_B_time_type2 / SIM_TIME:.2f}%"
-    )
+    report()
 
 
 if __name__ == "__main__":
