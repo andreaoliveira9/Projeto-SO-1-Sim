@@ -47,22 +47,32 @@ def report():
     mean_num_in_system_type1 = area_num_in_system_type1 / config.SIM_TIME
     mean_num_in_system_type2 = area_num_in_system_type2 / config.SIM_TIME
 
-    print("\n--------------------Relatório da Simulação--------------------")
-    print("Tipo 1 - atraso médio:", format_time(mean_delay_type1))
-    print("Tipo 2 - atraso médio:", format_time(mean_delay_type2))
-    print("Tipo 1 - tempo médio no sistema:", format_time(mean_waiting_time_type1))
-    print("Tipo 2 - tempo médio no sistema:", format_time(mean_waiting_time_type2))
-    print("Tipo 1 - número médio na fila:", mean_area_num_in_queue_type1)
-    print("Tipo 2 - número médio na fila:", mean_area_num_in_queue_type2)
-    print("Tipo 1 - número médio no sistema:", mean_num_in_system_type1)
-    print("Tipo 2 - número médio no sistema:", mean_num_in_system_type2)
+    print(
+        "\n---------------------------- Simulation Report ----------------------------"
+    )
+    print(
+        f"Steady-state average delay - Type 1: {format_time(mean_delay_type1)}, Type 2: {format_time(mean_delay_type2)}"
+    )
+    print(
+        f"Steady-state average waiting time - Type 1: {format_time(mean_waiting_time_type1)}, Type 2: {format_time(mean_waiting_time_type2)}"
+    )
+    print(
+        f"Steady-state average number in queue - Type 1: {mean_area_num_in_queue_type1:.2f}, Type 2: {mean_area_num_in_queue_type2:.2f}"
+    )
+    print(
+        f"Steady-state average number in system - Type 1: {mean_num_in_system_type1:.2f}, Type 2: {mean_num_in_system_type2:.2f}"
+    )
 
+    print("\nServer utilization:")
     for i in range(len(server_A_time_type1)):
-        print(
-            f"Servidor A{i+1} - % tempo com tipo 1: {100 * server_A_time_type1[i] / config.SIM_TIME:.2f}%, tipo 2: {100 * server_A_time_type2[i] / config.SIM_TIME:.2f}%"
-        )
+        perc1 = 100 * server_A_time_type1[i] / config.SIM_TIME
+        perc2 = 100 * server_A_time_type2[i] / config.SIM_TIME
+        print(f"\tServer A{i+1} - Type 1: {perc1:.2f}%, Type 2: {perc2:.2f}%")
+
     for i in range(len(server_B_time_type1)):
-        print(
-            f"Servidor B{i+1} - % tempo com tipo 1: {100 * server_B_time_type1[i] / config.SIM_TIME:.2f}%, tipo 2: {100 * server_B_time_type2[i] / config.SIM_TIME:.2f}%"
-        )
-    print("-------------------------------------------------------------\n")
+        perc1 = 100 * server_B_time_type1[i] / config.SIM_TIME
+        perc2 = 100 * server_B_time_type2[i] / config.SIM_TIME
+        print(f"\tServer B{i+1} - Type 1: {perc1:.2f}%, Type 2: {perc2:.2f}%")
+    print(
+        "---------------------------------------------------------------------------\n"
+    )
