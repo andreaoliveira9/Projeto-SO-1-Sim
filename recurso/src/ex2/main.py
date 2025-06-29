@@ -1,8 +1,7 @@
 import argparse
 import config
 import os
-from euler import simulate_euler
-from rk4 import simulate_rk4
+from methods import simulate
 from plotting import plot_comparison, plot_single
 
 if __name__ == "__main__":
@@ -32,7 +31,7 @@ if __name__ == "__main__":
             os.makedirs(args.save_path)
 
     if args.compare:
-        times_e, xs_e, ys_e = simulate_euler(
+        times_e, xs_e, ys_e = simulate(
             args.x0,
             args.y0,
             args.alpha,
@@ -41,8 +40,9 @@ if __name__ == "__main__":
             args.gamma,
             args.dt,
             args.tfinal,
+            "euler",
         )
-        times_rk, xs_rk, ys_rk = simulate_rk4(
+        times_rk, xs_rk, ys_rk = simulate(
             args.x0,
             args.y0,
             args.alpha,
@@ -51,31 +51,21 @@ if __name__ == "__main__":
             args.gamma,
             args.dt,
             args.tfinal,
+            "rk4",
         )
         plot_comparison(
             times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, args.dt, args.save_path
         )
     else:
-        if args.method == "euler":
-            times, xs, ys = simulate_euler(
-                args.x0,
-                args.y0,
-                args.alpha,
-                args.beta,
-                args.delta,
-                args.gamma,
-                args.dt,
-                args.tfinal,
-            )
-        else:
-            times, xs, ys = simulate_rk4(
-                args.x0,
-                args.y0,
-                args.alpha,
-                args.beta,
-                args.delta,
-                args.gamma,
-                args.dt,
-                args.tfinal,
-            )
+        times, xs, ys = simulate(
+            args.x0,
+            args.y0,
+            args.alpha,
+            args.beta,
+            args.delta,
+            args.gamma,
+            args.dt,
+            args.tfinal,
+            args.method,
+        )
         plot_single(times, xs, ys, args.method, args.dt, args.save_path)

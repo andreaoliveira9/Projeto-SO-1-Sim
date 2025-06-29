@@ -14,7 +14,18 @@ def observe(t, x, y, times, xs, ys):
     ys.append(y)
 
 
-def rk4_step(x, y, alpha, beta, delta, gamma, dt):
+def update_euler(x, y, alpha, beta, delta, gamma, dt):
+    """
+    Computes the next state using the Euler update.
+    """
+    dx = alpha * x - beta * x * y
+    dy = delta * x * y - gamma * y
+    x_new = x + dx * dt
+    y_new = y + dy * dt
+    return x_new, y_new
+
+
+def update_rk4(x, y, alpha, beta, delta, gamma, dt):
     """Perform a single RK4 update step."""
 
     def dx(x, y, alpha, beta):
@@ -43,14 +54,17 @@ def rk4_step(x, y, alpha, beta, delta, gamma, dt):
     return x_new, y_new
 
 
-def simulate_rk4(x0, y0, alpha, beta, delta, gamma, dt, t_final):
+def simulate(x0, y0, alpha, beta, delta, gamma, dt, t_final, method):
     """
-    Simulates the Lotka-Volterra system using the Runge-Kutta 4th order method.
+    Simulates the Lotka-Volterra system using the Euler method.
     """
     t, x, y, times, xs, ys = initialize(x0, y0)
 
     while t < t_final:
-        x, y = rk4_step(x, y, alpha, beta, delta, gamma, dt)
+        if method == "euler":
+            x, y = update_euler(x, y, alpha, beta, delta, gamma, dt)
+        elif method == "rk4":
+            x, y = update_rk4(x, y, alpha, beta, delta, gamma, dt)
         t += dt
         observe(t, x, y, times, xs, ys)
 
