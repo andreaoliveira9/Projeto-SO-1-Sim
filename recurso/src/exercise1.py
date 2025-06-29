@@ -1,6 +1,7 @@
 import argparse
 import heapq
 import random
+import math
 
 # Parâmetros da simulação
 MEAN_INTERARRIVAL = 1.0
@@ -21,8 +22,12 @@ queue_type2 = []
 # Contadores estatísticos
 delays_type1 = []
 delays_type2 = []
+waiting_times_type1 = []
+waiting_times_type2 = []
 area_num_in_queue_type1 = 0.0
 area_num_in_queue_type2 = 0.0
+area_num_in_system_type1 = 0.0
+area_num_in_system_type2 = 0.0
 server_A_time_type1 = [0.0 for _ in servers_A]
 server_A_time_type2 = [0.0 for _ in servers_A]
 server_B_time_type1 = [0.0 for _ in servers_B]
@@ -111,6 +116,7 @@ def departure_type1(info):
         delay = clock - arrival_time
         delays_type2.append(delay)
         service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
+        waiting_times_type2.append(delay + service_time)
         servers_A[idx_A] = True
         servers_B[idx_B] = True
         server_A_time_type2[idx_A] += service_time
@@ -122,6 +128,7 @@ def departure_type1(info):
             delay = clock - arrival_time
             delays_type1.append(delay)
             service_time = exponential(MEAN_SERVICE_TYPE1)
+            waiting_times_type1.append(delay + service_time)
             servers_A[idx_A] = True
             server_A_time_type1[idx_A] += service_time
             schedule_event(clock + service_time, "departure_type1", ("A", idx_A))
@@ -130,6 +137,7 @@ def departure_type1(info):
             delay = clock - arrival_time
             delays_type1.append(delay)
             service_time = exponential(MEAN_SERVICE_TYPE1)
+            waiting_times_type1.append(delay + service_time)
             servers_B[idx_B] = True
             server_B_time_type1[idx_B] += service_time
             schedule_event(clock + service_time, "departure_type1", ("B", idx_B))
@@ -146,6 +154,7 @@ def departure_type2(indices):
         delay = clock - arrival_time
         delays_type2.append(delay)
         service_time = uniform(UNIF_SERVICE_TYPE2_MIN, UNIF_SERVICE_TYPE2_MAX)
+        waiting_times_type2.append(delay + service_time)
         servers_A[server_idx_A] = True
         servers_B[server_idx_B] = True
         server_A_time_type2[server_idx_A] += service_time
@@ -158,9 +167,17 @@ def departure_type2(indices):
         delay = clock - arrival_time
         delays_type1.append(delay)
         service_time = exponential(MEAN_SERVICE_TYPE1)
+        waiting_times_type1.append(delay + service_time)
         servers_A[server_idx_A] = True
         server_A_time_type1[server_idx_A] += service_time
         schedule_event(clock + service_time, "departure_type1", ("A", server_idx_A))
+
+
+def format_time(minutes):
+    h = int(minutes // 60)
+    m = int(minutes % 60)
+    s = int((minutes - int(minutes)) * 60)
+    return f"{h}h {m}m {s}s"
 
 
 def report():
@@ -168,13 +185,29 @@ def report():
 
     mean_delay_type1 = sum(delays_type1) / len(delays_type1) if delays_type1 else 0
     mean_delay_type2 = sum(delays_type2) / len(delays_type2) if delays_type2 else 0
+    mean_waiting_time_type1 = (
+        sum(waiting_times_type1) / len(waiting_times_type1)
+        if waiting_times_type1
+        else 0
+    )
+    mean_waiting_time_type2 = (
+        sum(waiting_times_type2) / len(waiting_times_type2)
+        if waiting_times_type2
+        else 0
+    )
     mean_area_num_in_queue_type1 = area_num_in_queue_type1 / SIM_TIME
     mean_area_num_in_queue_type2 = area_num_in_queue_type2 / SIM_TIME
+    mean_num_in_system_type1 = area_num_in_system_type1 / SIM_TIME
+    mean_num_in_system_type2 = area_num_in_system_type2 / SIM_TIME
 
-    print("Tipo 1 - atraso médio:", mean_delay_type1)
-    print("Tipo 2 - atraso médio:", mean_delay_type2)
+    print("Tipo 1 - atraso médio:", format_time(mean_delay_type1))
+    print("Tipo 2 - atraso médio:", format_time(mean_delay_type2))
+    print("Tipo 1 - tempo médio no sistema:", format_time(mean_waiting_time_type1))
+    print("Tipo 2 - tempo médio no sistema:", format_time(mean_waiting_time_type2))
     print("Tipo 1 - número médio na fila:", mean_area_num_in_queue_type1)
     print("Tipo 2 - número médio na fila:", mean_area_num_in_queue_type2)
+    print("Tipo 1 - número médio no sistema:", mean_num_in_system_type1)
+    print("Tipo 2 - número médio no sistema:", mean_num_in_system_type2)
 
     for i in range(len(servers_A)):
         print(
@@ -187,7 +220,7 @@ def report():
 
 
 def simulate():
-    global clock, last_event_time, area_num_in_queue_type1, area_num_in_queue_type2
+    global clock, last_event_time, area_num_in_queue_type1, area_num_in_queue_type2, area_num_in_system_type1, area_num_in_system_type2
 
     schedule_event(0.0, "arrival")
 
@@ -196,6 +229,15 @@ def simulate():
         dt = clock - last_event_time
         area_num_in_queue_type1 += len(queue_type1) * dt
         area_num_in_queue_type2 += len(queue_type2) * dt
+
+        num_in_service_type1 = sum(servers_A) + sum(servers_B)
+        num_in_system_type1 = len(queue_type1) + num_in_service_type1
+        num_in_system_type2 = len(queue_type2) + (
+            1 if any(e[1] == "departure_type2" for e in event_list) else 0
+        )
+        area_num_in_system_type1 += num_in_system_type1 * dt
+        area_num_in_system_type2 += num_in_system_type2 * dt
+
         last_event_time = clock
 
         if event_type == "arrival":
