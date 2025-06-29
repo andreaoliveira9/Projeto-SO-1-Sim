@@ -12,7 +12,7 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
     ax0.set_title("Evolução da População de Presas ao Longo do Tempo")
     ax0.set_xlabel("Tempo (s)")
     ax0.set_ylabel("Presas")
-    ax0.legend()
+    ax0.legend(loc="upper right")
     ax0.grid(True)
 
     # Predadores (gráfico superior direito)
@@ -22,7 +22,7 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
     ax1.set_title("Evolução da População de Predadores ao Longo do Tempo")
     ax1.set_xlabel("Tempo (s)")
     ax1.set_ylabel("Predadores")
-    ax1.legend()
+    ax1.legend(loc="upper right")
     ax1.grid(True)
 
     # Combinado (gráfico inferior)
@@ -34,7 +34,7 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
     ax2.set_title("Populações de Presas e Predadores ao Longo do Tempo")
     ax2.set_xlabel("Tempo (s)")
     ax2.set_ylabel("População")
-    ax2.legend()
+    ax2.legend(loc="upper right")
     ax2.grid(True)
 
     plt.suptitle(f"Comparação dos métodos de Euler e RK4 (dt = {dt}s)")
@@ -51,7 +51,7 @@ def plot_single(times, xs, ys, method, dt, save_path=None):
     plt.xlabel("Tempo (s)")
     plt.ylabel("População")
     plt.title(f"Método de {method.upper()} (dt = {dt})")
-    plt.legend()
+    plt.legend(loc="upper right")
     plt.grid(True)
     if save_path:
         plt.savefig(f"{save_path}/metodo_{method.lower()}_{dt}.png")
