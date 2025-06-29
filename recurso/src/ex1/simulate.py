@@ -2,7 +2,7 @@ from collections import deque
 import heapq
 import random
 import config
-import statistics
+import stats
 
 
 def init_state():
@@ -18,10 +18,10 @@ def init_state():
     server_A_type = [None for _ in range(config.NUM_SERVERS_A)]
     server_B_type = [None for _ in range(config.NUM_SERVERS_B)]
 
-    statistics.server_A_time_type1 = [0.0 for _ in range(config.NUM_SERVERS_A)]
-    statistics.server_A_time_type2 = [0.0 for _ in range(config.NUM_SERVERS_A)]
-    statistics.server_B_time_type1 = [0.0 for _ in range(config.NUM_SERVERS_B)]
-    statistics.server_B_time_type2 = [0.0 for _ in range(config.NUM_SERVERS_B)]
+    stats.server_A_time_type1 = [0.0 for _ in range(config.NUM_SERVERS_A)]
+    stats.server_A_time_type2 = [0.0 for _ in range(config.NUM_SERVERS_A)]
+    stats.server_B_time_type1 = [0.0 for _ in range(config.NUM_SERVERS_B)]
+    stats.server_B_time_type2 = [0.0 for _ in range(config.NUM_SERVERS_B)]
 
     queue_type1 = deque()
     queue_type2 = deque()
@@ -61,11 +61,11 @@ def serve_type1(idx, server_type):
     if server_type == "A":
         servers_A[idx] = True
         server_A_type[idx] = "type1"
-        statistics.server_A_time_type1[idx] += service_time
+        stats.server_A_time_type1[idx] += service_time
     else:
         servers_B[idx] = True
         server_B_type[idx] = "type1"
-        statistics.server_B_time_type1[idx] += service_time
+        stats.server_B_time_type1[idx] += service_time
     schedule_event(clock + service_time, "departure_type1", (server_type, idx))
     return service_time
 
@@ -77,8 +77,8 @@ def serve_type2(idx_A, idx_B):
     servers_B[idx_B] = True
     server_A_type[idx_A] = "type2"
     server_B_type[idx_B] = "type2"
-    statistics.server_A_time_type2[idx_A] += service_time
-    statistics.server_B_time_type2[idx_B] += service_time
+    stats.server_A_time_type2[idx_A] += service_time
+    stats.server_B_time_type2[idx_B] += service_time
     schedule_event(clock + service_time, "departure_type2", (idx_A, idx_B))
     return service_time
 
@@ -88,9 +88,9 @@ def try_serve_type1_from_queue(idx, server_type):
     if queue_type1:
         arrival_time = queue_type1.popleft()
         delay = clock - arrival_time
-        statistics.delays_type1.append(delay)
+        stats.delays_type1.append(delay)
         service_time = serve_type1(idx, server_type)
-        statistics.waiting_times_type1.append(delay + service_time)
+        stats.waiting_times_type1.append(delay + service_time)
         return True
     return False
 
@@ -100,9 +100,9 @@ def try_serve_type2_from_queue(idx_A, idx_B):
     if queue_type2:
         arrival_time = queue_type2.popleft()
         delay = clock - arrival_time
-        statistics.delays_type2.append(delay)
+        stats.delays_type2.append(delay)
         service_time = serve_type2(idx_A, idx_B)
-        statistics.waiting_times_type2.append(delay + service_time)
+        stats.waiting_times_type2.append(delay + service_time)
         return True
     return False
 
@@ -173,10 +173,10 @@ def departure_type2(indices):
         return
 
 
-def update_statistics(dt):
-    """Update time-dependent statistics based on the time since the last event."""
-    statistics.area_num_in_queue_type1 += len(queue_type1) * dt
-    statistics.area_num_in_queue_type2 += len(queue_type2) * dt
+def update_stats(dt):
+    """Update time-dependent stats based on the time since the last event."""
+    stats.area_num_in_queue_type1 += len(queue_type1) * dt
+    stats.area_num_in_queue_type2 += len(queue_type2) * dt
 
     num_in_service_type1 = sum(1 for t in server_A_type if t == "type1") + sum(
         1 for t in server_B_type if t == "type1"
@@ -185,8 +185,8 @@ def update_statistics(dt):
     num_in_service_type2 = sum(1 for t in server_A_type if t == "type2")
     num_in_system_type2 = len(queue_type2) + num_in_service_type2
 
-    statistics.area_num_in_system_type1 += num_in_system_type1 * dt
-    statistics.area_num_in_system_type2 += num_in_system_type2 * dt
+    stats.area_num_in_system_type1 += num_in_system_type1 * dt
+    stats.area_num_in_system_type2 += num_in_system_type2 * dt
 
 
 def simulate():
@@ -194,7 +194,7 @@ def simulate():
     init_state()
 
     global clock, last_event_time
-    global statistics
+    global stats
 
     schedule_event(0.0, "arrival")
 
@@ -203,7 +203,7 @@ def simulate():
         if config.VERBOSE:
             print(f"[{clock:.2f}] Evento: {event_type}, dados: {data}")
         dt = clock - last_event_time
-        update_statistics(dt)
+        update_stats(dt)
 
         last_event_time = clock
 
@@ -214,4 +214,4 @@ def simulate():
         elif event_type == "departure_type2":
             departure_type2(data)
 
-    statistics.report()
+    stats.report()
