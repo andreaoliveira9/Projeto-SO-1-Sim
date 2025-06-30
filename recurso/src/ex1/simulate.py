@@ -189,7 +189,7 @@ def update_stats(dt):
     stats.area_num_in_system_type2 += num_in_system_type2 * dt
 
 
-def simulate():
+def simulate(print_stats=True):
     """Run the simulation until the specified simulation time is reached."""
     init_state()
 
@@ -214,4 +214,4 @@ def simulate():
         elif event_type == "departure_type2":
             departure_type2(data)
 
-    stats.report()
+    stats.report(print_stats)

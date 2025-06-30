@@ -20,7 +20,7 @@ def format_time(minutes):
     return f"{h}h {m}m {s}s"
 
 
-def report():
+def report(print_stats=True):
     """Prints a report of the simulation statistics."""
     import config
 
@@ -46,6 +46,9 @@ def report():
     mean_area_num_in_queue_type2 = area_num_in_queue_type2 / config.SIM_TIME
     mean_num_in_system_type1 = area_num_in_system_type1 / config.SIM_TIME
     mean_num_in_system_type2 = area_num_in_system_type2 / config.SIM_TIME
+
+    if print_stats == False:
+        return
 
     print(
         "\n---------------------------- Simulation Report ----------------------------"
