@@ -6,5 +6,6 @@ P_TYPE1 = 0.8                    # Probabilidade de um cliente ser tipo 1 (tipo 
 SIM_TIME = 1000.0                # Tempo total de simulação em minutos
 NUM_SERVERS_A = 2              # Número de servidores do tipo A
 NUM_SERVERS_B = 1              # Número de servidores do tipo B
+USE_SIMPY = False                # Usar SimPy para simulação
 
 VERBOSE = False                  # Controlo de logging detalhado (ativar com --verbose)

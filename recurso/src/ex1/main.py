@@ -2,6 +2,7 @@ import argparse
 import random
 import config
 from simulate import simulate
+from simulate_simpy import simulate_simpy
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -15,6 +16,11 @@ if __name__ == "__main__":
     parser.add_argument(
         "--serversB", type=int, default=1, help="Número de servidores do tipo B"
     )
+    parser.add_argument(
+        "--simpy",
+        action="store_true",
+        help="Usa SimPy para simulação",
+    )
     args = parser.parse_args()
 
     if args.seed:
@@ -24,5 +30,9 @@ if __name__ == "__main__":
 
     config.NUM_SERVERS_A = args.serversA
     config.NUM_SERVERS_B = args.serversB
+    config.USE_SIMPY = args.simpy
 
-    simulate()
+    if config.USE_SIMPY:
+        simulate_simpy()
+    else:
+        simulate()

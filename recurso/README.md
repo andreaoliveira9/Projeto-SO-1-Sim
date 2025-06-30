@@ -50,6 +50,7 @@ python src/ex1/main.py --serversA 3 --serversB 2 --seed 42 --verbose
 | `--serversB` | Number of type B servers                   | 1       |
 | `--seed`     | Random seed for reproducible results       | None    |
 | `--verbose`  | Enable verbose output for detailed logging | False   |
+| `--simpy`    | Use SimPy for simulation                   | False   |
 
 ### Exercise 2
 
