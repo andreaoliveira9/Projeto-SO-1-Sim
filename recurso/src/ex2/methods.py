@@ -28,28 +28,28 @@ def update_euler(x, y, alpha, beta, delta, gamma, dt):
 def update_rk4(x, y, alpha, beta, delta, gamma, dt):
     """Perform a single RK4 update step."""
 
-    def dx(x, y, alpha, beta):
+    def dx(x, y):
         """Compute dx/dt for Lotka-Volterra."""
         return alpha * x - beta * x * y
 
-    def dy(x, y, delta, gamma):
+    def dy(x, y):
         """Compute dy/dt for Lotka-Volterra."""
         return delta * x * y - gamma * y
 
-    k1x = dx(x, y, alpha, beta)
-    k1y = dy(x, y, delta, gamma)
+    k1x = dt * dx(x, y)
+    k1y = dt * dy(x, y)
 
-    k2x = dx(x + 0.5 * dt * k1x, y + 0.5 * dt * k1y, alpha, beta)
-    k2y = dy(x + 0.5 * dt * k1x, y + 0.5 * dt * k1y, delta, gamma)
+    k2x = dt * dx(x + k1x/2, y + k1y/2)
+    k2y = dt * dy(x + k1x/2, y + k1y/2)
 
-    k3x = dx(x + 0.5 * dt * k2x, y + 0.5 * dt * k2y, alpha, beta)
-    k3y = dy(x + 0.5 * dt * k2x, y + 0.5 * dt * k2y, delta, gamma)
+    k3x = dt * dx(x + k2x/2, y + k2y/2)
+    k3y = dt * dy(x + k2x/2, y + k2y/2)
 
-    k4x = dx(x + dt * k3x, y + dt * k3y, alpha, beta)
-    k4y = dy(x + dt * k3x, y + dt * k3y, delta, gamma)
+    k4x = dt * dx(x + k3x/2, y + k3y/2)
+    k4y = dt * dy(x + k3x/2, y + k3y/2)
 
-    x_new = x + (dt / 6.0) * (k1x + 2 * k2x + 2 * k3x + k4x)
-    y_new = y + (dt / 6.0) * (k1y + 2 * k2y + 2 * k3y + k4y)
+    x_new = x + (k1x + 2 * k2x + 2 * k3x + k4x)/6
+    y_new = y + (k1y + 2 * k2y + 2 * k3y + k4y)/6
 
     return x_new, y_new
 
