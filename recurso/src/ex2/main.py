@@ -4,6 +4,39 @@ import os
 from methods import simulate
 from plotting import plot_comparison, plot_single
 
+
+def compute_euler(x0, y0, alpha, beta, delta, gamma, dt, tfinal):
+    times_e, xs_e, ys_e = simulate(
+        args.x0,
+        args.y0,
+        args.alpha,
+        args.beta,
+        args.delta,
+        args.gamma,
+        args.dt,
+        args.tfinal,
+        "euler",
+    )
+
+    return times_e, xs_e, ys_e
+
+
+def compute_rk4(x0, y0, alpha, beta, delta, gamma, dt, tfinal):
+    times_rk, xs_rk, ys_rk = simulate(
+        args.x0,
+        args.y0,
+        args.alpha,
+        args.beta,
+        args.delta,
+        args.gamma,
+        args.dt,
+        args.tfinal,
+        "rk4",
+    )
+
+    return times_rk, xs_rk, ys_rk
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--x0", type=float, default=config.X0)
@@ -31,7 +64,7 @@ if __name__ == "__main__":
             os.makedirs(args.save_path)
 
     if args.compare:
-        times_e, xs_e, ys_e = simulate(
+        times_e, xs_e, ys_e = compute_euler(
             args.x0,
             args.y0,
             args.alpha,
@@ -40,9 +73,8 @@ if __name__ == "__main__":
             args.gamma,
             args.dt,
             args.tfinal,
-            "euler",
         )
-        times_rk, xs_rk, ys_rk = simulate(
+        times_rk, xs_rk, ys_rk = compute_rk4(
             args.x0,
             args.y0,
             args.alpha,
@@ -51,21 +83,32 @@ if __name__ == "__main__":
             args.gamma,
             args.dt,
             args.tfinal,
-            "rk4",
         )
         plot_comparison(
             times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, args.dt, args.save_path
         )
     else:
-        times, xs, ys = simulate(
-            args.x0,
-            args.y0,
-            args.alpha,
-            args.beta,
-            args.delta,
-            args.gamma,
-            args.dt,
-            args.tfinal,
-            args.method,
-        )
+        if args.method == "euler":
+            times, xs, ys = compute_euler(
+                args.x0,
+                args.y0,
+                args.alpha,
+                args.beta,
+                args.delta,
+                args.gamma,
+                args.dt,
+                args.tfinal,
+            )
+        elif args.method == "rk4":
+            times, xs, ys = compute_rk4(
+                args.x0,
+                args.y0,
+                args.alpha,
+                args.beta,
+                args.delta,
+                args.gamma,
+                args.dt,
+                args.tfinal,
+            )
+
         plot_single(times, xs, ys, args.method, args.dt, args.save_path)
