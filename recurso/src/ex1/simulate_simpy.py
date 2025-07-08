@@ -4,8 +4,6 @@ import statistics
 import config
 import stats
 
-# (remover completamente estas variáveis — já são geridas via stats.py)
-
 
 def init_state():
     """Initialize the simulation state (only statistical accumulators for SimPy version)."""
@@ -78,7 +76,6 @@ def serve_type2(env, idx_A, idx_B, arrival_time, busy_A, busy_B):
 
 def scheduler(env, busy_A, busy_B, queue_type1, queue_type2):
     while True:
-        # Tenta servir cliente tipo 2 (prioridade)
         free_A = [i for i, b in enumerate(busy_A) if not b]
         free_B = [i for i, b in enumerate(busy_B) if not b]
         while free_A and free_B and len(queue_type2.items) > 0:
@@ -89,7 +86,6 @@ def scheduler(env, busy_A, busy_B, queue_type1, queue_type2):
             arrival_time = yield queue_type2.get()
             env.process(serve_type2(env, idx_A, idx_B, arrival_time, busy_A, busy_B))
 
-        # Depois tenta servir clientes tipo 1
         for idx_A in [i for i, b in enumerate(busy_A) if not b]:
             if len(queue_type1.items) == 0:
                 break
@@ -130,8 +126,6 @@ def monitor(env, queue_type1, queue_type2):
 
 
 def simulate_simpy(print_stats=True):
-    """Run the simulation using SimPy."""
-
     init_state()
 
     env = simpy.Environment()

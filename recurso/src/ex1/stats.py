@@ -13,7 +13,13 @@ server_B_time_type2 = []
 
 
 def format_time(minutes):
-    """Converts a time in minutes to a formatted string of hours, minutes, and seconds."""
+    """
+    Converte um tempo em minutos para uma string formatada com horas, minutos e segundos.
+    Inputs:
+        minutes: tempo em minutos
+    Returns:
+        string formatada do tempo (por exemplo: "1h 2m 3s")
+    """
     h = int(minutes // 60)
     m = int(minutes % 60)
     s = int((minutes - int(minutes)) * 60)
@@ -21,7 +27,12 @@ def format_time(minutes):
 
 
 def report(print_stats=True):
-    """Prints a report of the simulation statistics."""
+    """
+    Imprime um relatório com estatísticas da simulação.
+    Inputs:
+        print_stats: se True, imprime os resultados no terminal
+    Returns: Nenhum
+    """
     import config
 
     global area_num_in_queue_type1, area_num_in_queue_type2

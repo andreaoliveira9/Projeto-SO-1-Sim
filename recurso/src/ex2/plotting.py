@@ -5,7 +5,6 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
     fig = plt.figure(figsize=(15, 10))
     gs = fig.add_gridspec(2, 2, height_ratios=[1, 1])
 
-    # Presas (gráfico superior esquerdo)
     ax0 = fig.add_subplot(gs[0, 0])
     ax0.plot(times_e, xs_e, label="Euler", linestyle="--")
     ax0.plot(times_rk, xs_rk, label="RK4")
@@ -15,7 +14,6 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
     ax0.legend(loc="upper right")
     ax0.grid(True)
 
-    # Predadores (gráfico superior direito)
     ax1 = fig.add_subplot(gs[0, 1])
     ax1.plot(times_e, ys_e, label="Euler", linestyle="--")
     ax1.plot(times_rk, ys_rk, label="RK4")
@@ -25,7 +23,6 @@ def plot_comparison(times_e, xs_e, ys_e, times_rk, xs_rk, ys_rk, dt, save_path=N
     ax1.legend(loc="upper right")
     ax1.grid(True)
 
-    # Combinado (gráfico inferior)
     ax2 = fig.add_subplot(gs[1, :])
     ax2.plot(times_e, xs_e, label="Presas (Euler)", linestyle="--")
     ax2.plot(times_rk, xs_rk, label="Presas (RK4)")

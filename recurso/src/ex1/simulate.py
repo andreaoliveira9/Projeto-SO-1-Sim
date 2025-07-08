@@ -6,7 +6,11 @@ import stats
 
 
 def init_state():
-    """Initialize the simulation state, including servers, queues, clock, and event list."""
+    """
+    Inicializa o estado da simulação.
+    Inputs: Nenhum
+    Returns: Nenhum
+    """
     global servers_A, servers_B, server_A_type, server_B_type
     global queue_type1, queue_type2
     global clock, last_event_time
@@ -33,22 +37,48 @@ def init_state():
 
 
 def schedule_event(time, event_type, data=None):
-    """Add a new event to the future event list in order."""
+    """
+    Adiciona um novo evento à lista de eventos futuros por ordem.
+    Inputs:
+        time: tempo em que o evento ocorrerá
+        event_type: tipo do evento
+        data: dados associados ao evento
+    Returns: Nenhum
+    """
     heapq.heappush(event_list, (time, event_type, data))
 
 
 def exponential(mean):
-    """Generate an exponentially distributed random variable with given mean."""
+    """
+    Gera uma variável aleatória exponencial com a média fornecida.
+    Inputs:
+        mean: média da distribuição exponencial
+    Returns:
+        float: valor gerado da distribuição exponencial
+    """
     return random.expovariate(1.0 / mean)
 
 
 def uniform(a, b):
-    """Generate a uniformly distributed random variable between a and b."""
+    """
+    Gera uma variável aleatória uniforme entre a e b.
+    Inputs:
+        a: limite inferior
+        b: limite superior
+    Returns:
+        float: valor gerado da distribuição uniforme
+    """
     return random.uniform(a, b)
 
 
 def find_free_server(servers):
-    """Find the index of a free server in the given server list, or None if none free."""
+    """
+    Encontra o índice de um servidor livre na lista dada, ou None se nenhum estiver livre.
+    Inputs:
+        servers: lista indicando se cada servidor está ocupado
+    Returns:
+        índice do servidor livre ou None se nenhum disponível
+    """
     for i, busy in enumerate(servers):
         if not busy:
             return i
@@ -56,7 +86,14 @@ def find_free_server(servers):
 
 
 def serve_type1(idx, server_type):
-    """Serve a type 1 customer on the specified server and schedule their departure."""
+    """
+    Atende um cliente do tipo 1 no servidor especificado e agenda a sua saída.
+    Inputs:
+        idx: índice do servidor
+        server_type: tipo do servidor ("A" ou "B")
+    Returns:
+        tempo de serviço gerado para o atendimento
+    """
     service_time = exponential(config.MEAN_SERVICE_TYPE1)
     if server_type == "A":
         servers_A[idx] = True
@@ -71,7 +108,14 @@ def serve_type1(idx, server_type):
 
 
 def serve_type2(idx_A, idx_B):
-    """Serve a type 2 customer using servers A and B, and schedule their departure."""
+    """
+    Atende um cliente do tipo 2 utilizando servidores A e B e agenda a sua saída.
+    Inputs:
+        idx_A: índice do servidor A
+        idx_B: índice do servidor B
+    Returns:
+        tempo de serviço gerado para o atendimento
+    """
     service_time = uniform(config.UNIF_SERVICE_TYPE2_MIN, config.UNIF_SERVICE_TYPE2_MAX)
     servers_A[idx_A] = True
     servers_B[idx_B] = True
@@ -84,7 +128,14 @@ def serve_type2(idx_A, idx_B):
 
 
 def try_serve_type1_from_queue(idx, server_type):
-    """Try to serve a type 1 customer from the queue if any are waiting."""
+    """
+    Tenta atender um cliente do tipo 1 da fila, se houver algum à espera.
+    Inputs:
+        idx: índice do servidor disponível
+        server_type: tipo do servidor ("A" ou "B")
+    Returns:
+        True se um cliente foi atendido, False caso contrário
+    """
     if queue_type1:
         arrival_time = queue_type1.popleft()
         delay = clock - arrival_time
@@ -96,7 +147,14 @@ def try_serve_type1_from_queue(idx, server_type):
 
 
 def try_serve_type2_from_queue(idx_A, idx_B):
-    """Try to serve a type 2 customer from the queue if any are waiting."""
+    """
+    Tenta atender um cliente do tipo 2 da fila, se houver algum à espera.
+    Inputs:
+        idx_A: índice do servidor A disponível
+        idx_B: índice do servidor B disponível
+    Returns:
+        True se um cliente foi atendido, False caso contrário
+    """
     if queue_type2:
         arrival_time = queue_type2.popleft()
         delay = clock - arrival_time
@@ -108,7 +166,11 @@ def try_serve_type2_from_queue(idx_A, idx_B):
 
 
 def arrival():
-    """Handle arrival events: assign customers to servers or queues as appropriate."""
+    """
+    Trata eventos de chegada: atribui clientes a servidores ou filas conforme apropriado.
+    Inputs: Nenhum
+    Returns: Nenhum
+    """
     global clock
 
     interarrival = exponential(config.MEAN_INTERARRIVAL)
@@ -134,7 +196,12 @@ def arrival():
 
 
 def departure_type1(info):
-    """Handle departure events for type 1 customers and manage queue servicing."""
+    """
+    Trata eventos de saída para clientes do tipo 1 e gerencia o atendimento das filas.
+    Inputs:
+        info: tuple contendo tipo do servidor e índice
+    Returns: Nenhum
+    """
     server_type, server_idx = info
 
     if server_type == "A":
@@ -159,7 +226,12 @@ def departure_type1(info):
 
 
 def departure_type2(indices):
-    """Handle departure events for type 2 customers and manage queue servicing."""
+    """
+    Trata eventos de saída para clientes do tipo 2 e gerencia o atendimento das filas.
+    Inputs:
+        indices: tupla contendo índices dos servidores A e B
+    Returns: Nenhum
+    """
     server_idx_A, server_idx_B = indices
 
     servers_A[server_idx_A] = False
@@ -174,7 +246,12 @@ def departure_type2(indices):
 
 
 def update_stats(dt):
-    """Update time-dependent stats based on the time since the last event."""
+    """
+    Atualiza estatísticas dependentes do tempo com base no tempo desde o último evento.
+    Inputs:
+        dt: intervalo de tempo desde o último evento
+    Returns: Nenhum
+    """
     stats.area_num_in_queue_type1 += len(queue_type1) * dt
     stats.area_num_in_queue_type2 += len(queue_type2) * dt
 
@@ -190,7 +267,12 @@ def update_stats(dt):
 
 
 def simulate(print_stats=True):
-    """Run the simulation until the specified simulation time is reached."""
+    """
+    Executa a simulação até que o tempo especificado seja alcançado.
+    Inputs:
+        print_stats: indica se as estatísticas devem ser impressas ao final (padrão: True)
+    Returns: Nenhum
+    """
     init_state()
 
     global clock, last_event_time
