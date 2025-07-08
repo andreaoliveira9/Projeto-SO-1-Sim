@@ -6,7 +6,13 @@ import stats
 
 
 def init_state():
-    """Initialize the simulation state (only statistical accumulators for SimPy version)."""
+    """
+    Inicializa o estado da simulação (apenas acumuladores estatísticos para a versão SimPy).
+    Inputs:
+        Nenhum
+    Returns:
+        Nenhum
+    """
     stats.delays_type1 = []
     stats.delays_type2 = []
     stats.waiting_times_type1 = []
@@ -22,6 +28,15 @@ def init_state():
 
 
 def customer_arrivals(env, queue_type1, queue_type2):
+    """
+    Gera chegadas de clientes e coloca-os nas filas correspondentes.
+    Inputs:
+        env: ambiente de simulação SimPy
+        queue_type1: fila para clientes do tipo 1
+        queue_type2: fila para clientes do tipo 2
+    Returns:
+        Nenhum
+    """
     while True:
         yield env.timeout(random.expovariate(1.0 / config.MEAN_INTERARRIVAL))
         arrival_time = env.now
@@ -32,6 +47,19 @@ def customer_arrivals(env, queue_type1, queue_type2):
 
 
 def try_serve_from_queues(env, idx_A, idx_B, busy_A, busy_B, queue_type1, queue_type2):
+    """
+    Tenta servir clientes das filas, verificando disponibilidade dos servidores.
+    Inputs:
+        env: ambiente de simulação SimPy
+        idx_A: índice do servidor A
+        idx_B: índice do servidor B
+        busy_A: lista indicando se servidores A estão ocupados
+        busy_B: lista indicando se servidores B estão ocupados
+        queue_type1: fila para clientes do tipo 1
+        queue_type2: fila para clientes do tipo 2
+    Returns:
+        Nenhum
+    """
     if not busy_A[idx_A] and not busy_B[idx_B] and len(queue_type2.items) > 0:
         busy_A[idx_A] = True
         busy_B[idx_B] = True
@@ -48,6 +76,17 @@ def try_serve_from_queues(env, idx_A, idx_B, busy_A, busy_B, queue_type1, queue_
 
 
 def serve_type1(env, server_idx, arrival_time, busy_list, server_type):
+    """
+    Serve um cliente do tipo 1 num servidor específico.
+    Inputs:
+        env: ambiente de simulação SimPy
+        server_idx: índice do servidor
+        arrival_time: tempo de chegada do cliente
+        busy_list: lista indicando ocupação dos servidores correspondentes
+        server_type: tipo do servidor ("A" ou "B")
+    Returns:
+        Nenhum
+    """
     delay = env.now - arrival_time
     stats.delays_type1.append(delay)
     service_time = random.expovariate(1.0 / config.MEAN_SERVICE_TYPE1)
@@ -61,6 +100,18 @@ def serve_type1(env, server_idx, arrival_time, busy_list, server_type):
 
 
 def serve_type2(env, idx_A, idx_B, arrival_time, busy_A, busy_B):
+    """
+    Serve um cliente do tipo 2 utilizando servidores A e B.
+    Inputs:
+        env: ambiente de simulação SimPy
+        idx_A: índice do servidor A
+        idx_B: índice do servidor B
+        arrival_time: tempo de chegada do cliente
+        busy_A: lista indicando ocupação dos servidores A
+        busy_B: lista indicando ocupação dos servidores B
+    Returns:
+        Nenhum
+    """
     delay = env.now - arrival_time
     stats.delays_type2.append(delay)
     service_time = random.uniform(
@@ -75,6 +126,17 @@ def serve_type2(env, idx_A, idx_B, arrival_time, busy_A, busy_B):
 
 
 def scheduler(env, busy_A, busy_B, queue_type1, queue_type2):
+    """
+    Agenda o atendimento dos clientes nas filas, alocando servidores disponíveis.
+    Inputs:
+        env: ambiente de simulação SimPy
+        busy_A: lista indicando ocupação dos servidores A
+        busy_B: lista indicando ocupação dos servidores B
+        queue_type1: fila para clientes do tipo 1
+        queue_type2: fila para clientes do tipo 2
+    Returns:
+        Nenhum
+    """
     while True:
         free_A = [i for i, b in enumerate(busy_A) if not b]
         free_B = [i for i, b in enumerate(busy_B) if not b]
@@ -104,6 +166,15 @@ def scheduler(env, busy_A, busy_B, queue_type1, queue_type2):
 
 
 def monitor(env, queue_type1, queue_type2):
+    """
+    Monitora o sistema atualizando as estatísticas de tempo e número de clientes.
+    Inputs:
+        env: ambiente de simulação SimPy
+        queue_type1: fila para clientes do tipo 1
+        queue_type2: fila para clientes do tipo 2
+    Returns:
+        Nenhum
+    """
     last_time = env.now
     while True:
         yield env.timeout(0.1)
@@ -126,6 +197,13 @@ def monitor(env, queue_type1, queue_type2):
 
 
 def simulate_simpy(print_stats=True):
+    """
+    Executa a simulação utilizando SimPy e gera relatório estatístico.
+    Inputs:
+        print_stats: indica se os resultados devem ser impressos
+    Returns:
+        Nenhum
+    """
     init_state()
 
     env = simpy.Environment()
