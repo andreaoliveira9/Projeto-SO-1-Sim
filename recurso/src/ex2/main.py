@@ -6,24 +6,26 @@ from plotting import plot_comparison, plot_single
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--x0", type=float, default=config.X0)
-    parser.add_argument("--y0", type=float, default=config.Y0)
-    parser.add_argument("--alpha", type=float, default=config.ALPHA)
-    parser.add_argument("--beta", type=float, default=config.BETA)
-    parser.add_argument("--delta", type=float, default=config.DELTA)
-    parser.add_argument("--gamma", type=float, default=config.GAMMA)
-    parser.add_argument("--dt", type=float, default=config.DT)
-    parser.add_argument("--tfinal", type=float, default=config.T_FINAL)
+    parser.add_argument("--x0", type=float, help="População inicial das presas", default=config.X0)
+    parser.add_argument("--y0", type=float, help="População inicial dos predadores", default=config.Y0)
+    parser.add_argument("--alpha", type=float, help="Taxa de crescimento das presas", default=config.ALPHA)
+    parser.add_argument("--beta", type=float, help="Taxa de predação", default=config.BETA)
+    parser.add_argument("--delta", type=float, help="Taxa de crescimento dos predadores proporcional à predação", default=config.DELTA)
+    parser.add_argument("--gamma", type=float, help="Taxa de mortalidade dos predadores", default=config.GAMMA)
+    parser.add_argument("--dt", type=float, help="Passo de tempo da simulação", default=config.DT)
+    parser.add_argument("--tfinal", type=float, help="Tempo final da simulação", default=config.T_FINAL)
     parser.add_argument(
         "--method",
         choices=["euler", "rk4"],
+        help="Método numérico a usar (euler ou rk4)",
         default=config.METHOD,
     )
     parser.add_argument(
         "--compare",
         action="store_true",
+        help="Compara os métodos de Euler e RK4",
     )
-    parser.add_argument("--save_path", type=str, default=config.SAVE_PATH)
+    parser.add_argument("--save_path", type=str, help="Diretório para guardar os gráficos gerados", default=config.SAVE_PATH)
     args = parser.parse_args()
 
     if args.save_path:

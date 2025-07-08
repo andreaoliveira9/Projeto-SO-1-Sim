@@ -8,3 +8,4 @@ NUM_SERVERS_A = 2                # Número de servidores do tipo A
 NUM_SERVERS_B = 1                # Número de servidores do tipo B
 USE_SIMPY = False                # Usar SimPy para simulação
 VERBOSE = False                  # Controlo de logging detalhado (ativar com --verbose)
+SEED = None                      # Semente para aleatoriedade (pode ser definida via --seed)

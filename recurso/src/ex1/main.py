@@ -6,20 +6,32 @@ from simulate_simpy import simulate_simpy
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seed", type=int, help="Seed para aleatoriedade")
     parser.add_argument(
-        "--verbose", action="store_true", help="Ativa o modo verboso de saída"
+        "--seed", type=int, help="Seed para aleatoriedade", default=config.SEED
     )
     parser.add_argument(
-        "--serversA", type=int, default=2, help="Número de servidores do tipo A"
+        "--verbose",
+        action="store_true",
+        help="Ativa o modo verboso de saída",
+        default=config.VERBOSE,
     )
     parser.add_argument(
-        "--serversB", type=int, default=1, help="Número de servidores do tipo B"
+        "--serversA",
+        type=int,
+        help="Número de servidores do tipo A",
+        default=config.NUM_SERVERS_A,
+    )
+    parser.add_argument(
+        "--serversB",
+        type=int,
+        help="Número de servidores do tipo B",
+        default=config.NUM_SERVERS_B,
     )
     parser.add_argument(
         "--simpy",
         action="store_true",
         help="Usa SimPy para simulação",
+        default=config.USE_SIMPY,
     )
     args = parser.parse_args()
 
