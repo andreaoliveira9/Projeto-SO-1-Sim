@@ -32,8 +32,6 @@ pip install -r src/requirements.txt
 python src/ex1/main.py
 ```
 
-This script runs a discrete event simulation of a queueing system with two types of servers (A and B) and two types of customers (type 1 and type 2).
-
 **Note:** Default parameters can be modified in `src/ex1/config.py`.
 
 #### With custom parameters
@@ -53,6 +51,10 @@ python src/ex1/main.py --serversA 3 --serversB 2 --seed 42 --verbose
 | `--simpy`    | Use SimPy for simulation                   | False   |
 
 ### Exercise 2
+
+```bash
+python src/ex2/main.py
+```
 
 **Note:** Default parameters can be modified in `src/ex2/config.py`.
 
@@ -77,7 +79,7 @@ python src/ex2/main.py --compare --x0 10.0 --y0 10.0 --alpha 0.1 --beta 0.02 --d
 #### With custom save path
 
 ```bash
-python src/ex2/main.py --compare --dt 0.001 --save_path src/ex2/results
+python src/ex2/main.py --compare --x0 10.0 --y0 10.0 --alpha 0.1 --beta 0.02 --delta 0.02 --gamma 0.4 --dt 0.1 --save_path docs/ex2
 ```
 
 #### Command-line parameters
