@@ -2,7 +2,7 @@
 
 Primeiro projeto Simulação e Otimização de Recurso
 
-Nota:
+Nota: 19
 
 ## How to run
 
